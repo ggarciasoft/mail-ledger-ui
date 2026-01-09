@@ -1,10 +1,11 @@
-import { useGmailConnectionStatus, useTriggerGmailSync, useGmailSyncHistory } from '../hooks/use-settings';
+import { useGmailConnectionStatus, useTriggerGmailSync, useGmailSyncHistory, useConnectGmail } from '../hooks/use-settings';
 import { Mail, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 export default function GmailSyncSection() {
     const { data: status, isLoading: statusLoading } = useGmailConnectionStatus();
     const { data: history, isLoading: historyLoading } = useGmailSyncHistory();
     const syncMutation = useTriggerGmailSync();
+    const connectMutation = useConnectGmail();
 
     const handleSync = async () => {
         try {
@@ -54,8 +55,8 @@ export default function GmailSyncSection() {
                             <span className="text-sm font-medium text-gray-700">Status:</span>
                             <span
                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status?.isConnected
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
                                     }`}
                             >
                                 {status?.isConnected ? 'Connected' : 'Not Connected'}
@@ -77,20 +78,39 @@ export default function GmailSyncSection() {
                 )}
             </div>
 
-            {/* Manual Sync */}
-            <div className="mb-6">
-                <button
-                    onClick={handleSync}
-                    disabled={syncMutation.isPending || !status?.isConnected}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <RefreshCw className={`w-4 h-4 mr-2 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
-                    {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
-                </button>
-                <p className="mt-2 text-sm text-gray-500">
-                    Manually trigger a Gmail sync to fetch new emails
-                </p>
-            </div>
+            {/* Connect Gmail Button (when not connected) */}
+            {!statusLoading && !status?.isConnected && (
+                <div className="mb-6 pb-6 border-b border-gray-200">
+                    <button
+                        onClick={() => connectMutation.mutate()}
+                        disabled={connectMutation.isPending}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                    >
+                        <Mail className="w-4 h-4 mr-2" />
+                        {connectMutation.isPending ? 'Connecting...' : 'Connect Gmail Account'}
+                    </button>
+                    <p className="mt-2 text-sm text-gray-500">
+                        Connect your Gmail account to start syncing emails
+                    </p>
+                </div>
+            )}
+
+            {/* Manual Sync (only when connected) */}
+            {status?.isConnected && (
+                <div className="mb-6">
+                    <button
+                        onClick={handleSync}
+                        disabled={syncMutation.isPending}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <RefreshCw className={`w-4 h-4 mr-2 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
+                        {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
+                    </button>
+                    <p className="mt-2 text-sm text-gray-500">
+                        Manually trigger a Gmail sync to fetch new emails
+                    </p>
+                </div>
+            )}
 
             {/* Sync History */}
             <div>
@@ -117,10 +137,10 @@ export default function GmailSyncSection() {
                                 </div>
                                 <span
                                     className={`px-2 py-1 rounded text-xs font-medium ${sync.status === 'Completed'
-                                            ? 'bg-green-100 text-green-800'
-                                            : sync.status === 'Failed'
-                                                ? 'bg-red-100 text-red-800'
-                                                : 'bg-blue-100 text-blue-800'
+                                        ? 'bg-green-100 text-green-800'
+                                        : sync.status === 'Failed'
+                                            ? 'bg-red-100 text-red-800'
+                                            : 'bg-blue-100 text-blue-800'
                                         }`}
                                 >
                                     {sync.status}

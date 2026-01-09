@@ -56,3 +56,12 @@ export const useGmailSyncHistory = () => {
     queryFn: settingsApi.getGmailSyncHistory,
   });
 };
+
+export const useConnectGmail = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const { url } = await settingsApi.getGmailAuthUrl();
+      window.location.href = url;
+    },
+  });
+};

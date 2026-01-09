@@ -24,6 +24,11 @@ export const settingsApi = {
   },
 
   // Gmail Sync
+  getGmailAuthUrl: async (): Promise<{ url: string }> => {
+    const response = await apiClient.get<{ url: string }>('/api/gmail/auth-url');
+    return response.data;
+  },
+
   getGmailConnectionStatus: async (): Promise<GmailConnectionStatus> => {
     const response = await apiClient.get<GmailConnectionStatus>('/api/gmail/status');
     return response.data;
