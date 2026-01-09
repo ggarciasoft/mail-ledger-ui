@@ -64,7 +64,7 @@ export default function TopMerchantsChart({ data, loading }: TopMerchantsChartPr
                         style={{ fontSize: '12px' }}
                     />
                     <Tooltip
-                        formatter={(value: number) => formatCurrency(value)}
+                        formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : ''}
                         contentStyle={{
                             backgroundColor: 'white',
                             border: '1px solid #e5e7eb',

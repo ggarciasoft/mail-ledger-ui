@@ -18,7 +18,6 @@ export default function DashboardPage() {
         data: topMerchants,
         isLoading: merchantsLoading,
         error: merchantsError,
-        period: merchantsPeriod,
         setPeriod: setMerchantsPeriod,
     } = useTopMerchants();
 

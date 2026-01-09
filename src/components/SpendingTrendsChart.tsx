@@ -67,7 +67,7 @@ export default function SpendingTrendsChart({ data, loading }: SpendingTrendsCha
                         style={{ fontSize: '12px' }}
                     />
                     <Tooltip
-                        formatter={(value: number) => formatCurrency(value)}
+                        formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : ''}
                         labelFormatter={formatDate}
                         contentStyle={{
                             backgroundColor: 'white',
