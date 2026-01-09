@@ -61,7 +61,7 @@ export default function ExtractionCandidatesPage() {
                         </div>
                     ))}
                 </div>
-            ) : !data?.candidates || data.candidates.length === 0 ? (
+            ) : !data?.items || data.items.length === 0 ? (
                 <EmptyState
                     icon={FileCheck}
                     title="No candidates found"
@@ -70,7 +70,7 @@ export default function ExtractionCandidatesPage() {
             ) : (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                        {data.candidates.map((candidate) => (
+                        {data.items.map((candidate) => (
                             <div
                                 key={candidate.id}
                                 onClick={() => setSelectedCandidate(candidate)}
@@ -79,9 +79,9 @@ export default function ExtractionCandidatesPage() {
                                 {/* Email Info */}
                                 <div className="mb-4">
                                     <p className="text-sm font-medium text-gray-900 truncate mb-1">
-                                        {candidate.email?.subject}
+                                        {candidate.emailSubject}
                                     </p>
-                                    <p className="text-xs text-gray-500 truncate">{candidate.email?.sender}</p>
+                                    <p className="text-xs text-gray-500 truncate">{candidate.emailFrom}</p>
                                 </div>
 
                                 {/* Extracted Data */}
@@ -89,21 +89,40 @@ export default function ExtractionCandidatesPage() {
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Amount:</span>
                                         <span className="text-sm font-semibold text-gray-900">
-                                            {formatCurrency(candidate.extractedData.amount, candidate.extractedData.currency)}
+                                            {formatCurrency(candidate.amount, candidate.currency)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Merchant:</span>
                                         <span className="text-sm font-medium text-gray-900 truncate ml-2">
-                                            {candidate.extractedData.merchantName}
+                                            {candidate.merchant}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Date:</span>
                                         <span className="text-sm text-gray-900">
-                                            {formatDate(candidate.extractedData.transactionDate)}
+                                            {formatDate(candidate.transactionDate)}
                                         </span>
                                     </div>
+                                </div>
+
+                                {/* Status Badge */}
+                                <div className="mb-3">
+                                    {candidate.status === 'Pending' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    )}
+                                    {candidate.status === 'Confirmed' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Confirmed
+                                        </span>
+                                    )}
+                                    {candidate.status === 'Rejected' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Rejected
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* Confidence */}

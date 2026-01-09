@@ -58,7 +58,7 @@ export default function TopMerchantsChart({ data, loading }: TopMerchantsChartPr
                     />
                     <YAxis
                         type="category"
-                        dataKey="merchantName"
+                        dataKey="name"
                         width={120}
                         stroke="#9ca3af"
                         style={{ fontSize: '12px' }}
@@ -72,7 +72,7 @@ export default function TopMerchantsChart({ data, loading }: TopMerchantsChartPr
                             padding: '8px 12px',
                         }}
                     />
-                    <Bar dataKey="totalAmount" radius={[0, 8, 8, 0]}>
+                    <Bar dataKey="totalSpent" radius={[0, 8, 8, 0]}>
                         {data.merchants.map((_, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
@@ -82,16 +82,16 @@ export default function TopMerchantsChart({ data, loading }: TopMerchantsChartPr
 
             <div className="mt-4 space-y-2">
                 {data.merchants.map((merchant, index) => (
-                    <div key={merchant.merchantName} className="flex items-center justify-between text-sm">
+                    <div key={merchant.name} className="flex items-center justify-between text-sm">
                         <div className="flex items-center">
                             <div
                                 className="w-3 h-3 rounded-full mr-2"
                                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
                             ></div>
-                            <span className="text-gray-700">{merchant.merchantName}</span>
+                            <span className="text-gray-700">{merchant.name}</span>
                         </div>
                         <div className="text-right">
-                            <span className="font-medium text-gray-900">{formatCurrency(merchant.totalAmount)}</span>
+                            <span className="font-medium text-gray-900">{formatCurrency(merchant.totalSpent)}</span>
                             <span className="text-gray-500 ml-2">({merchant.transactionCount} txns)</span>
                         </div>
                     </div>

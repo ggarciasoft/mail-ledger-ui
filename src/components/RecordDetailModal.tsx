@@ -17,13 +17,13 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
     };
 
     const formatDate = (dateString: string) => {
-        return new Intl.DateTimeFormat('en-US', {
+        return dateString ? new Intl.DateTimeFormat('en-US', {
             month: 'long',
             day: 'numeric',
             year: 'numeric',
             hour: 'numeric',
             minute: '2-digit',
-        }).format(new Date(dateString));
+        }).format(new Date(dateString)) : '';
     };
 
     return (
@@ -81,7 +81,7 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                                     <Store className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
                                     <div>
                                         <p className="text-sm font-medium text-gray-500">Merchant</p>
-                                        <p className="text-sm text-gray-900">{record.merchantName}</p>
+                                        <p className="text-sm text-gray-900">{record.merchant}</p>
                                     </div>
                                 </div>
 
@@ -107,14 +107,14 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                                     </div>
                                 )}
 
-                                {record.transactionType && (
+                                {record.type && (
                                     <div className="flex items-start">
                                         <div className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex items-center justify-center">
                                             💳
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium text-gray-500">Transaction Type</p>
-                                            <p className="text-sm text-gray-900">{record.transactionType}</p>
+                                            <p className="text-sm text-gray-900">{record.type}</p>
                                         </div>
                                     </div>
                                 )}
@@ -164,10 +164,6 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                                 <div className="flex justify-between">
                                     <span className="text-gray-500">Confirmed:</span>
                                     <span className="text-gray-900">{formatDate(record.confirmedAt)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-500">Created:</span>
-                                    <span className="text-gray-900">{formatDate(record.createdAt)}</span>
                                 </div>
                             </div>
                         </div>

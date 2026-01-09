@@ -38,8 +38,8 @@ export const settingsApi = {
     await apiClient.post('/api/gmail/sync');
   },
 
-  getGmailSyncHistory: async (): Promise<GmailSyncHistory[]> => {
-    const response = await apiClient.get<GmailSyncHistory[]>('/api/gmail/sync-history');
+  getGmailSyncHistory: async (): Promise<GmailSyncHistory> => {
+    const response = await apiClient.get<GmailSyncHistory>('/api/gmail/sync-history');
     return response.data;
   },
 };

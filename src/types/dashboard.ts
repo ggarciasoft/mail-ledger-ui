@@ -5,29 +5,27 @@ export interface DashboardOverview {
   pendingCandidates: number;
   confirmedRecords: number;
   totalSpending: number;
-  averageTransactionAmount: number;
-  lastSyncTime: string | null;
+  avgTransaction: number;
+  lastSyncAt: string | null;
 }
 
 export interface SpendingTrend {
   date: string;
-  amount: number;
-  count: number;
+  totalSpent: number;
+  transactionCount: number;
 }
 
 export interface SpendingTrendsResponse {
-  trends: SpendingTrend[];
-  period: 'week' | 'month' | 'year';
+  data: SpendingTrend[];
 }
 
 export interface TopMerchant {
-  merchantName: string;
-  totalAmount: number;
+  name: string;
+  totalSpent: number;
   transactionCount: number;
   percentage: number;
 }
 
 export interface TopMerchantsResponse {
   merchants: TopMerchant[];
-  period: 'week' | 'month' | 'year';
 }

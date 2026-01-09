@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useEmails } from '../hooks/use-emails';
-import { Mail, AlertCircle } from 'lucide-react';
+import { Mail, AlertCircle, ExternalLink } from 'lucide-react';
 import EmailFilters from '../components/EmailFilters';
 import EmailDetailModal from '../components/EmailDetailModal';
 import StatusBadge from '../components/StatusBadge';
@@ -98,6 +98,12 @@ export default function EmailsPage() {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Financial
                                         </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Error
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -137,6 +143,27 @@ export default function EmailsPage() {
                                                 <div className="text-sm text-gray-500">
                                                     {email.isFinancial ? '✓' : '—'}
                                                 </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                {email.processingError ? (
+                                                    <span className="text-red-600" title={email.processingError}>
+                                                        ⚠️
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-400">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <a
+                                                    href={`${import.meta.env.VITE_GMAIL_INBOX_URL}#inbox/${email.messageId}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                                    title="View in Gmail"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </a>
                                             </td>
                                         </tr>
                                     ))}

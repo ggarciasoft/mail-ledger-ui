@@ -16,7 +16,7 @@ export default function SpendingTrendsChart({ data, loading }: SpendingTrendsCha
         );
     }
 
-    if (!data || data.trends?.length === 0) {
+    if (!data || data.data?.length === 0) {
         return (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 h-80 flex items-center justify-center">
                 <div className="text-center">
@@ -53,7 +53,7 @@ export default function SpendingTrendsChart({ data, loading }: SpendingTrendsCha
             </div>
 
             <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data.trends}>
+                <LineChart data={data.data}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis
                         dataKey="date"
@@ -78,7 +78,7 @@ export default function SpendingTrendsChart({ data, loading }: SpendingTrendsCha
                     />
                     <Line
                         type="monotone"
-                        dataKey="amount"
+                        dataKey="totalSpent"
                         stroke="#3b82f6"
                         strokeWidth={2}
                         dot={{ fill: '#3b82f6', r: 4 }}

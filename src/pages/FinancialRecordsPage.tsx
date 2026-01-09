@@ -60,7 +60,7 @@ export default function FinancialRecordsPage() {
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         <p className="mt-4 text-gray-500">Loading records...</p>
                     </div>
-                ) : !data?.records || data.records.length === 0 ? (
+                ) : !data?.items || data.items.length === 0 ? (
                     <EmptyState
                         icon={DollarSign}
                         title="No records found"
@@ -90,7 +90,7 @@ export default function FinancialRecordsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {data.records.map((record) => (
+                                    {data.items.map((record) => (
                                         <tr
                                             key={record.id}
                                             onClick={() => setSelectedRecord(record)}
@@ -100,7 +100,7 @@ export default function FinancialRecordsPage() {
                                                 <div className="text-sm text-gray-900">{formatDate(record.transactionDate)}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">{record.merchantName}</div>
+                                                <div className="text-sm font-medium text-gray-900">{record.merchant}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-semibold text-gray-900">

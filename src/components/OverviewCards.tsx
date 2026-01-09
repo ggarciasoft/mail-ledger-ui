@@ -62,14 +62,14 @@ export default function OverviewCards({ data, loading }: OverviewCardsProps) {
 
             <StatCard
                 title="Avg Transaction"
-                value={data?.averageTransactionAmount ? formatCurrency(data.averageTransactionAmount) : '$0'}
+                value={data?.avgTransaction ? formatCurrency(data.avgTransaction) : '$0'}
                 icon={TrendingUp}
                 loading={loading}
             />
 
             <StatCard
                 title="Last Sync"
-                value={data?.lastSyncTime ? formatDate(data.lastSyncTime) : 'Never'}
+                value={data?.lastSyncAt ? formatDate(data.lastSyncAt) : 'Never'}
                 icon={Calendar}
                 loading={loading}
             />

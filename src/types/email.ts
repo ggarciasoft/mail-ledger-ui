@@ -5,11 +5,13 @@ export type EmailStatus = 'Pending' | 'Classified' | 'Extracted' | 'Failed';
 export interface Email {
   id: string;
   gmailMessageId: string;
+  messageId: string;
   subject: string;
   from: string;
   receivedAt: string;
   processingStatus: EmailStatus;
   errorMessage?: string | null;
+  processingError?: string | null;
   processedAt?: string | null;
   createdAt: string;
   classificationConfidence?: number;

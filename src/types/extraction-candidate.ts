@@ -2,7 +2,11 @@
 export interface ExtractionCandidate {
   id: string;
   emailId: string;
-  extractedData: ExtractedFinancialData;
+  sourceBank?: string;
+  transactionDate: string;
+  amount: number;
+  currency: string;
+  merchant: string;
   confidence: number;
   status: 'Pending' | 'Confirmed' | 'Rejected';
   rejectionReason?: string | null;
@@ -10,24 +14,9 @@ export interface ExtractionCandidate {
   rejectedAt?: string | null;
   createdAt: string;
   
-  // Related email data
-  email?: {
-    subject: string;
-    sender: string;
-    receivedAt: string;
-  };
-}
-
-// Extracted financial data
-export interface ExtractedFinancialData {
-  transactionDate: string;
-  amount: number;
-  currency: string;
-  merchantName: string;
-  category?: string;
-  description?: string;
-  sourceBank?: string;
-  transactionType?: string;
+  emailFrom: string;
+  emailReceivedAt: string;
+  emailSubject: string;
 }
 
 // List request
@@ -43,16 +32,11 @@ export interface ExtractionCandidateListRequest {
 
 // List response
 export interface ExtractionCandidateListResponse {
-  candidates: ExtractionCandidate[];
+  items: ExtractionCandidate[];
   totalCount: number;
   page: number;
   pageSize: number;
   totalPages: number;
-}
-
-// Confirm request
-export interface ConfirmCandidateRequest {
-  extractedData: ExtractedFinancialData;
 }
 
 // Reject request

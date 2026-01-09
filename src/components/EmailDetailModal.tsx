@@ -1,4 +1,4 @@
-import { X, Calendar, User, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Calendar, User, Mail, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import type { Email } from '../types/email';
 import StatusBadge from './StatusBadge';
 
@@ -19,6 +19,8 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
             minute: '2-digit',
         }).format(new Date(dateString)) : '';
     };
+
+    const gmailUrl = `${import.meta.env.VITE_GMAIL_INBOX_URL}#inbox/${email.messageId}`;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -106,6 +108,19 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                         </div>
                     )}
 
+                    {/* Processing Error */}
+                    {email.processingError && (
+                        <div className="mb-6">
+                            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                                Processing Error
+                            </h4>
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <p className="text-sm text-red-900">{email.processingError}</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Metadata */}
                     <div className="border-t border-gray-200 pt-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">Additional Information</h4>
@@ -123,7 +138,16 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                 </div>
 
                 {/* Footer */}
-                <div className="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200">
+                <div className="bg-gray-50 px-6 py-4 flex justify-between border-t border-gray-200">
+                    <a
+                        href={gmailUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                        <ExternalLink className="w-4 h-4" />
+                        View in Gmail
+                    </a>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"

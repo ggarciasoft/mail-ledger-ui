@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { useAuthStore } from '../store/auth-store';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -37,9 +38,8 @@ apiClient.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         
         if (!refreshToken) {
-          // No refresh token, redirect to login
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
+          // No refresh token, clear auth and redirect to login
+          useAuthStore.getState().logout();
           window.location.href = '/login';
           return Promise.reject(error);
         }
@@ -51,9 +51,8 @@ apiClient.interceptors.response.use(
 
         const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-        // Store new tokens
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+        // Update tokens in store
+        useAuthStore.getState().updateTokens(accessToken, newRefreshToken);
 
         // Retry original request with new token
         if (originalRequest.headers) {
@@ -61,9 +60,8 @@ apiClient.interceptors.response.use(
         }
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear tokens and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        // Refresh failed, clear auth and redirect to login
+        useAuthStore.getState().logout();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

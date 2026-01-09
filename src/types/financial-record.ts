@@ -6,11 +6,11 @@ export interface FinancialRecord {
   transactionDate: string;
   amount: number;
   currency: string;
-  merchantName: string;
+  merchant: string;
   category?: string;
   description?: string;
   sourceBank?: string;
-  transactionType?: string;
+  type?: string;
   confirmedAt: string;
   createdAt: string;
   
@@ -34,13 +34,13 @@ export interface FinancialRecordListRequest {
   currency?: string;
   sourceBank?: string;
   transactionType?: string;
-  sortBy?: 'transactionDate' | 'amount' | 'merchantName';
+  sortBy?: 'transactionDate' | 'amount' | 'merchant';
   sortDirection?: 'asc' | 'desc';
 }
 
 // List response
 export interface FinancialRecordListResponse {
-  records: FinancialRecord[];
+  items: FinancialRecord[];
   totalCount: number;
   page: number;
   pageSize: number;

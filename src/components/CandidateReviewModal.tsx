@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Tag } from 'lucide-react';
+import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Building2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type { ExtractionCandidate, ExtractedFinancialData } from '../types/extraction-candidate';
+import type { ExtractionCandidate } from '../types/extraction-candidate';
 import ConfidenceMeter from './ConfidenceMeter';
 import { useConfirmCandidate, useRejectCandidate } from '../hooks/use-extraction-candidates';
 
@@ -16,11 +16,8 @@ const financialDataSchema = z.object({
     transactionDate: z.string().min(1, 'Transaction date is required'),
     amount: z.number().positive('Amount must be positive'),
     currency: z.string().min(1, 'Currency is required'),
-    merchantName: z.string().min(1, 'Merchant name is required'),
-    category: z.string().optional(),
-    description: z.string().optional(),
+    merchant: z.string().min(1, 'Merchant name is required'),
     sourceBank: z.string().optional(),
-    transactionType: z.string().optional(),
 });
 
 type FinancialDataForm = z.infer<typeof financialDataSchema>;
@@ -39,11 +36,11 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
     } = useForm<FinancialDataForm>({
         resolver: zodResolver(financialDataSchema),
         values: candidate ? {
-            ...candidate.extractedData,
-            category: candidate.extractedData.category || '',
-            description: candidate.extractedData.description || '',
-            sourceBank: candidate.extractedData.sourceBank || '',
-            transactionType: candidate.extractedData.transactionType || '',
+            transactionDate: new Date(candidate.transactionDate).toISOString().split('T')[0],
+            amount: candidate.amount,
+            currency: candidate.currency,
+            merchant: candidate.merchant,
+            sourceBank: candidate.sourceBank || '',
         } : undefined,
     });
 
@@ -63,7 +60,7 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
         try {
             await confirmMutation.mutateAsync({
                 id: candidate.id,
-                data: { extractedData: data as ExtractedFinancialData },
+                data: data,
             });
             onClose();
         } catch (error) {
@@ -112,16 +109,16 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                                 <div>
                                     <p className="text-xs font-medium text-gray-500 uppercase">Subject</p>
-                                    <p className="text-sm text-gray-900 mt-1">{candidate.email?.subject}</p>
+                                    <p className="text-sm text-gray-900 mt-1">{candidate.emailSubject}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-medium text-gray-500 uppercase">From</p>
-                                    <p className="text-sm text-gray-900 mt-1">{candidate.email?.sender}</p>
+                                    <p className="text-sm text-gray-900 mt-1">{candidate.emailFrom}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-medium text-gray-500 uppercase">Received</p>
                                     <p className="text-sm text-gray-900 mt-1">
-                                        {candidate.email?.receivedAt && formatDate(candidate.email.receivedAt)}
+                                        {candidate.emailReceivedAt && formatDate(candidate.emailReceivedAt)}
                                     </p>
                                 </div>
                             </div>
@@ -144,7 +141,8 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                     <input
                                         {...register('transactionDate')}
                                         type="date"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled={candidate.status !== 'Pending'}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     />
                                     {errors.transactionDate && (
                                         <p className="mt-1 text-sm text-red-600">{errors.transactionDate.message}</p>
@@ -161,7 +159,8 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                             {...register('amount', { valueAsNumber: true })}
                                             type="number"
                                             step="0.01"
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            disabled={candidate.status !== 'Pending'}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         />
                                         {errors.amount && (
                                             <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
@@ -173,7 +172,8 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                         <input
                                             {...register('currency')}
                                             type="text"
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            disabled={candidate.status !== 'Pending'}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         />
                                         {errors.currency && (
                                             <p className="mt-1 text-sm text-red-600">{errors.currency.message}</p>
@@ -184,54 +184,29 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         <Store className="w-4 h-4 inline mr-1" />
-                                        Merchant Name *
+                                        Merchant *
                                     </label>
                                     <input
-                                        {...register('merchantName')}
+                                        {...register('merchant')}
                                         type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled={candidate.status !== 'Pending'}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     />
-                                    {errors.merchantName && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.merchantName.message}</p>
+                                    {errors.merchant && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.merchant.message}</p>
                                     )}
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        <Tag className="w-4 h-4 inline mr-1" />
-                                        Category
+                                        <Building2 className="w-4 h-4 inline mr-1" />
+                                        Source Bank
                                     </label>
-                                    <input
-                                        {...register('category')}
-                                        type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea
-                                        {...register('description')}
-                                        rows={2}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Source Bank</label>
                                     <input
                                         {...register('sourceBank')}
                                         type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Transaction Type</label>
-                                    <input
-                                        {...register('transactionType')}
-                                        type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled={candidate.status !== 'Pending'}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     />
                                 </div>
                             </form>
@@ -241,31 +216,57 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
 
                 {/* Footer */}
                 <div className="bg-gray-50 px-6 py-4 flex justify-between border-t border-gray-200">
-                    <button
-                        onClick={() => setShowRejectDialog(true)}
-                        disabled={rejectMutation.isPending}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center disabled:opacity-50"
-                    >
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Reject
-                    </button>
+                    {candidate.status === 'Pending' ? (
+                        <>
+                            <button
+                                onClick={() => setShowRejectDialog(true)}
+                                disabled={rejectMutation.isPending}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center disabled:opacity-50"
+                            >
+                                <XCircle className="w-4 h-4 mr-2" />
+                                Reject
+                            </button>
 
-                    <div className="flex gap-3">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleSubmit(handleConfirm)}
-                            disabled={confirmMutation.isPending}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center disabled:opacity-50"
-                        >
-                            <Check className="w-4 h-4 mr-2" />
-                            {isDirty ? 'Update & Confirm' : 'Confirm'}
-                        </button>
-                    </div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSubmit(handleConfirm)}
+                                    disabled={confirmMutation.isPending}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center disabled:opacity-50"
+                                >
+                                    <Check className="w-4 h-4 mr-2" />
+                                    {isDirty ? 'Update & Confirm' : 'Confirm'}
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="w-full flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                {candidate.status === 'Confirmed' ? (
+                                    <span className="px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium flex items-center">
+                                        <Check className="w-4 h-4 mr-2" />
+                                        Confirmed
+                                    </span>
+                                ) : (
+                                    <span className="px-4 py-2 bg-red-100 text-red-800 rounded-lg font-medium flex items-center">
+                                        <XCircle className="w-4 h-4 mr-2" />
+                                        Rejected
+                                    </span>
+                                )}
+                            </div>
+                            <button
+                                onClick={onClose}
+                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

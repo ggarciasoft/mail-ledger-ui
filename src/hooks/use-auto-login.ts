@@ -4,7 +4,7 @@ import { authApi } from '../lib/auth-api';
 import { useAuthStore } from '../store/auth-store';
 
 export const useAutoLogin = () => {
-  const { isAuthenticated, setUser, logout } = useAuthStore();
+  const { isAuthenticated, setUser } = useAuthStore();
 
   const { data, error } = useQuery({
     queryKey: ['currentUser'],
@@ -20,12 +20,8 @@ export const useAutoLogin = () => {
     }
   }, [data, setUser]);
 
-  useEffect(() => {
-    if (error) {
-      // If fetching user fails, logout
-      logout();
-    }
-  }, [error, logout]);
+  // Note: We don't handle errors here because the axios interceptor
+  // already handles 401 errors by clearing tokens and redirecting to login
 
   return { user: data, isLoading: isAuthenticated && !data && !error };
 };
