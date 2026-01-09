@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
+import EmailsPage from './pages/EmailsPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -28,6 +29,7 @@ function AppContent() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/emails" element={<EmailsPage />} />
           </Route>
         </Route>
 
