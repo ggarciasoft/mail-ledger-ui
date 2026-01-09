@@ -6,13 +6,15 @@ export interface Email {
   id: string;
   gmailMessageId: string;
   subject: string;
-  sender: string;
+  from: string;
   receivedAt: string;
   processingStatus: EmailStatus;
-  classificationResult?: string;
   errorMessage?: string | null;
   processedAt?: string | null;
   createdAt: string;
+  classificationConfidence?: number;
+  hasExtractionCandidate?: boolean;
+  isFinancial?: boolean;
 }
 
 // Email list request

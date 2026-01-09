@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut } from 'lucide-react';
+import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter } from 'lucide-react';
 import { useLogout } from '../hooks/use-auth';
 import { useAuthStore } from '../store/auth-store';
 
@@ -14,6 +14,7 @@ export default function AppLayout() {
         { name: 'Extraction Candidates', href: '/extraction-candidates', icon: FileCheck },
         { name: 'Financial Records', href: '/financial-records', icon: DollarSign },
         { name: 'Processing', href: '/processing', icon: Play },
+        { name: 'Rules', href: '/rules', icon: Filter },
         { name: 'Settings', href: '/settings', icon: Settings },
     ];
 
@@ -51,8 +52,8 @@ export default function AppLayout() {
                                 key={item.name}
                                 to={item.href}
                                 className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${active
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
                                 <Icon className={`w-5 h-5 mr-3 ${active ? 'text-blue-700' : 'text-gray-500'}`} />

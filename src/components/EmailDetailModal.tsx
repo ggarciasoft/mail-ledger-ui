@@ -52,7 +52,7 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                             <User className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
                             <div>
                                 <p className="text-sm font-medium text-gray-500">Sender</p>
-                                <p className="text-sm text-gray-900">{email.sender}</p>
+                                <p className="text-sm text-gray-900">{email.from}</p>
                             </div>
                         </div>
 

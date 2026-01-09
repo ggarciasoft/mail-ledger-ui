@@ -89,6 +89,15 @@ export default function EmailsPage() {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Status
                                         </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Confidence
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Has Extraction
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Financial
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -104,13 +113,30 @@ export default function EmailsPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500 max-w-xs truncate">{email.sender}</div>
+                                                <div className="text-sm text-gray-500 max-w-xs truncate">{email.from}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-500">{formatDate(email.receivedAt)}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <StatusBadge status={email.processingStatus} />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-500">
+                                                    {email.classificationConfidence != null
+                                                        ? `${(email.classificationConfidence * 100).toFixed(1)}%`
+                                                        : '—'}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-500">
+                                                    {email.hasExtractionCandidate ? '✓' : '—'}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-500">
+                                                    {email.isFinancial ? '✓' : '—'}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
