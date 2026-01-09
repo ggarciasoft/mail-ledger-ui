@@ -61,7 +61,7 @@ export default function EmailsPage() {
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         <p className="mt-4 text-gray-500">Loading emails...</p>
                     </div>
-                ) : !data?.emails || data.emails.length === 0 ? (
+                ) : !data?.items || data.items.length === 0 ? (
                     <EmptyState
                         icon={Mail}
                         title="No emails found"
@@ -92,7 +92,7 @@ export default function EmailsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {data.emails.map((email) => (
+                                    {data.items.map((email) => (
                                         <tr
                                             key={email.id}
                                             onClick={() => setSelectedEmail(email)}
@@ -110,7 +110,7 @@ export default function EmailsPage() {
                                                 <div className="text-sm text-gray-500">{formatDate(email.receivedAt)}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <StatusBadge status={email.status} />
+                                                <StatusBadge status={email.processingStatus} />
                                             </td>
                                         </tr>
                                     ))}

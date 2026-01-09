@@ -11,13 +11,13 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
     if (!email) return null;
 
     const formatDate = (dateString: string) => {
-        return new Intl.DateTimeFormat('en-US', {
+        return dateString ? new Intl.DateTimeFormat('en-US', {
             month: 'long',
             day: 'numeric',
             year: 'numeric',
             hour: 'numeric',
             minute: '2-digit',
-        }).format(new Date(dateString));
+        }).format(new Date(dateString)) : '';
     };
 
     return (
@@ -38,7 +38,7 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
                     {/* Status */}
                     <div className="mb-6">
-                        <StatusBadge status={email.status} />
+                        <StatusBadge status={email.processingStatus} />
                     </div>
 
                     {/* Subject */}

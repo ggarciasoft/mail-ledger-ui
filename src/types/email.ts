@@ -8,7 +8,7 @@ export interface Email {
   subject: string;
   sender: string;
   receivedAt: string;
-  status: EmailStatus;
+  processingStatus: EmailStatus;
   classificationResult?: string;
   errorMessage?: string | null;
   processedAt?: string | null;
@@ -27,7 +27,7 @@ export interface EmailListRequest {
 
 // Email list response
 export interface EmailListResponse {
-  emails: Email[];
+  items: Email[];
   totalCount: number;
   page: number;
   pageSize: number;

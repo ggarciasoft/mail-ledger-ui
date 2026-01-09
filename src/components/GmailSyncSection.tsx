@@ -117,13 +117,13 @@ export default function GmailSyncSection() {
                 <h3 className="text-md font-semibold text-gray-900 mb-4">Sync History</h3>
                 {historyLoading ? (
                     <p className="text-gray-500 text-sm">Loading history...</p>
-                ) : !history || history.length === 0 ? (
+                ) : !history || history.history.length === 0 ? (
                     <p className="text-gray-500 text-sm">No sync history yet</p>
                 ) : (
                     <div className="space-y-2">
-                        {history.slice(0, 5).map((sync) => (
+                        {history.history.slice && history.history.slice(0, 5).map((sync) => (
                             <div
-                                key={sync.id}
+                                key={sync.syncedAt}
                                 className="flex items-center justify-between p-3 border border-gray-200 rounded-lg text-sm"
                             >
                                 <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function GmailSyncSection() {
                                         <p className="font-medium text-gray-900">
                                             {sync.emailsProcessed} emails processed
                                         </p>
-                                        <p className="text-xs text-gray-500">{formatDate(sync.startedAt)}</p>
+                                        <p className="text-xs text-gray-500">{formatDate(sync.syncedAt)}</p>
                                     </div>
                                 </div>
                                 <span

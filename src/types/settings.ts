@@ -21,9 +21,13 @@ export interface CreateApiKeyResponse {
 
 // Gmail Sync History
 export interface GmailSyncHistory {
-  id: string;
-  startedAt: string;
-  completedAt?: string;
+  history: GmailSyncHistoryList[];
+  lastSucessfullSync: string;
+  totalSyncs: number;
+}
+
+export interface GmailSyncHistoryList {
+  syncedAt: string;
   emailsProcessed: number;
   status: 'InProgress' | 'Completed' | 'Failed';
   errorMessage?: string;
