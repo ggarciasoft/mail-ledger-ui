@@ -1,0 +1,161 @@
+import { useState } from 'react';
+import { useApiKeys, useCreateApiKey, useDeleteApiKey } from '../hooks/use-settings';
+import { Key, Plus, Trash2, Copy, Check } from 'lucide-react';
+
+export default function ApiKeysSection() {
+    const { data: apiKeys, isLoading } = useApiKeys();
+    const createMutation = useCreateApiKey();
+    const deleteMutation = useDeleteApiKey();
+
+    const [showCreateDialog, setShowCreateDialog] = useState(false);
+    const [keyName, setKeyName] = useState('');
+    const [newKey, setNewKey] = useState<string | null>(null);
+    const [copiedKey, setCopiedKey] = useState(false);
+
+    const handleCreate = async () => {
+        if (!keyName.trim()) return;
+
+        try {
+            const result = await createMutation.mutateAsync({ name: keyName });
+            setNewKey(result.fullKey);
+            setKeyName('');
+            setShowCreateDialog(false);
+        } catch (error) {
+            console.error('Failed to create API key:', error);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await deleteMutation.mutateAsync(id);
+        } catch (error) {
+            console.error('Failed to delete API key:', error);
+        }
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedKey(true);
+        setTimeout(() => setCopiedKey(false), 2000);
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+    };
+
+    return (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <Key className="w-5 h-5 mr-2 text-blue-600" />
+                    API Keys
+                </h2>
+                <button
+                    onClick={() => setShowCreateDialog(true)}
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Key
+                </button>
+            </div>
+
+            {/* New Key Display */}
+            {newKey && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm font-medium text-green-900 mb-2">
+                        API Key Created! Copy it now - it won't be shown again.
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <code className="flex-1 px-3 py-2 bg-white border border-green-300 rounded font-mono text-sm">
+                            {newKey}
+                        </code>
+                        <button
+                            onClick={() => copyToClipboard(newKey)}
+                            className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        >
+                            {copiedKey ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* API Keys List */}
+            {isLoading ? (
+                <div className="text-center py-8 text-gray-500">Loading API keys...</div>
+            ) : !apiKeys || apiKeys.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                    No API keys yet. Create one to get started.
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {apiKeys.map((key) => (
+                        <div
+                            key={key.id}
+                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                        >
+                            <div className="flex-1">
+                                <p className="font-medium text-gray-900">{key.name}</p>
+                                <p className="text-sm text-gray-500 font-mono">{key.keyPrefix}...</p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    Created: {formatDate(key.createdAt)}
+                                    {key.lastUsedAt && ` • Last used: ${formatDate(key.lastUsedAt)}`}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => handleDelete(key.id)}
+                                disabled={deleteMutation.isPending}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Create Dialog */}
+            {showCreateDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Create API Key</h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Key Name
+                            </label>
+                            <input
+                                type="text"
+                                value={keyName}
+                                onChange={(e) => setKeyName(e.target.value)}
+                                placeholder="e.g., Production Server"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowCreateDialog(false)}
+                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCreate}
+                                disabled={!keyName.trim() || createMutation.isPending}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                            >
+                                {createMutation.isPending ? 'Creating...' : 'Create'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

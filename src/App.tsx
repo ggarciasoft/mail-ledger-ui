@@ -13,6 +13,7 @@ import EmailsPage from './pages/EmailsPage';
 import ExtractionCandidatesPage from './pages/ExtractionCandidatesPage';
 import FinancialRecordsPage from './pages/FinancialRecordsPage';
 import ProcessingPage from './pages/ProcessingPage';
+import SettingsPage from './pages/SettingsPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -36,6 +37,7 @@ function AppContent() {
             <Route path="/extraction-candidates" element={<ExtractionCandidatesPage />} />
             <Route path="/financial-records" element={<FinancialRecordsPage />} />
             <Route path="/processing" element={<ProcessingPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 
