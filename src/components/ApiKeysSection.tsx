@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useApiKeys, useCreateApiKey, useDeleteApiKey } from '../hooks/use-settings';
 import { Key, Plus, Trash2, Copy, Check } from 'lucide-react';
 
+const ALLOWED_SCOPES = [
+    { value: 'read:transactions', label: 'Read Transactions', description: 'View financial records' },
+    { value: 'read:rules', label: 'Read Rules', description: 'View email filtering rules' },
+    { value: 'write:rules', label: 'Write Rules', description: 'Create/modify rules' },
+    { value: 'read:users', label: 'Read Users', description: 'View user information' },
+    { value: 'write:users', label: 'Write Users', description: 'Modify user information' },
+];
+
 export default function ApiKeysSection() {
     const { data: apiKeys, isLoading } = useApiKeys();
     const createMutation = useCreateApiKey();
@@ -9,20 +17,38 @@ export default function ApiKeysSection() {
 
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [keyName, setKeyName] = useState('');
+    const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
     const [newKey, setNewKey] = useState<string | null>(null);
     const [copiedKey, setCopiedKey] = useState(false);
 
     const handleCreate = async () => {
-        if (!keyName.trim()) return;
+        if (!keyName.trim() || selectedScopes.length === 0) return;
 
         try {
-            const result = await createMutation.mutateAsync({ name: keyName });
-            setNewKey(result.fullKey);
+            const result = await createMutation.mutateAsync({
+                name: keyName,
+                scopes: selectedScopes
+            });
+            setNewKey(result.apiKey);
             setKeyName('');
+            setSelectedScopes([]);
             setShowCreateDialog(false);
         } catch (error) {
             console.error('Failed to create API key:', error);
         }
+    };
+
+    const toggleScope = (scopeValue: string) => {
+        setSelectedScopes(prev =>
+            prev.includes(scopeValue)
+                ? prev.filter(s => s !== scopeValue)
+                : [...prev, scopeValue]
+        );
+    };
+
+    const getScopeLabel = (scopeValue: string) => {
+        const scope = ALLOWED_SCOPES.find(s => s.value === scopeValue);
+        return scope ? scope.label : scopeValue;
     };
 
     const handleDelete = async (id: string) => {
@@ -103,7 +129,17 @@ export default function ApiKeysSection() {
                         >
                             <div className="flex-1">
                                 <p className="font-medium text-gray-900">{key.name}</p>
-                                <p className="text-sm text-gray-500 font-mono">{key.keyPrefix}...</p>
+                                <p className="text-sm text-gray-500 font-mono">{key.maskedKey}</p>
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                    {key.scopes.map(scope => (
+                                        <span
+                                            key={scope}
+                                            className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"
+                                        >
+                                            {getScopeLabel(scope)}
+                                        </span>
+                                    ))}
+                                </div>
                                 <p className="text-xs text-gray-400 mt-1">
                                     Created: {formatDate(key.createdAt)}
                                     {key.lastUsedAt && ` • Last used: ${formatDate(key.lastUsedAt)}`}
@@ -138,16 +174,47 @@ export default function ApiKeysSection() {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Scopes (Permissions)
+                            </label>
+                            <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
+                                {ALLOWED_SCOPES.map(scope => (
+                                    <label
+                                        key={scope.value}
+                                        className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedScopes.includes(scope.value)}
+                                            onChange={() => toggleScope(scope.value)}
+                                            className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="font-medium text-sm text-gray-900">{scope.label}</div>
+                                            <div className="text-xs text-gray-500">{scope.description}</div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+                            {selectedScopes.length === 0 && (
+                                <p className="text-xs text-red-600 mt-1">Please select at least one scope</p>
+                            )}
+                        </div>
                         <div className="flex justify-end gap-3">
                             <button
-                                onClick={() => setShowCreateDialog(false)}
+                                onClick={() => {
+                                    setShowCreateDialog(false);
+                                    setKeyName('');
+                                    setSelectedScopes([]);
+                                }}
                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleCreate}
-                                disabled={!keyName.trim() || createMutation.isPending}
+                                disabled={!keyName.trim() || selectedScopes.length === 0 || createMutation.isPending}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
                             >
                                 {createMutation.isPending ? 'Creating...' : 'Create'}

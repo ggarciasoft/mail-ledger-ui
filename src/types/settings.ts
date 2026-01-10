@@ -2,21 +2,28 @@
 export interface ApiKey {
   id: string;
   name: string;
-  keyPrefix: string;
+  maskedKey: string;
+  scopes: string[];
+  isActive: boolean;
+  expiresAt: string | null;
+  lastUsedAt: string | null;
   createdAt: string;
-  lastUsedAt?: string;
-  expiresAt?: string;
 }
 
 // Create API Key request
 export interface CreateApiKeyRequest {
   name: string;
+  scopes: string[];
 }
 
 // Create API Key response
 export interface CreateApiKeyResponse {
-  apiKey: ApiKey;
-  fullKey: string; // Only returned once
+  id: string;
+  apiKey: string; // Full API key - only shown once
+  name: string;
+  scopes: string[];
+  expiresAt: string | null;
+  message: string;
 }
 
 // Gmail Sync History
