@@ -2,6 +2,7 @@
 export interface ExtractionCandidate {
   id: string;
   emailId: string;
+  emailMessageId: string;
   sourceBank?: string;
   transactionDate: string;
   amount: number;
@@ -39,7 +40,41 @@ export interface ExtractionCandidateListResponse {
   totalPages: number;
 }
 
+// Confirm request (financial data)
+export interface ConfirmCandidateRequest {
+  transactionDate: string;
+  amount: number;
+  currency: string;
+  merchant: string;
+  sourceBank?: string;
+}
+
 // Reject request
 export interface RejectCandidateRequest {
   reason: string;
+}
+
+// Bulk confirm request
+export interface BulkConfirmRequest {
+  candidateIds: string[];
+}
+
+// Bulk reject request
+export interface BulkRejectRequest {
+  candidateIds: string[];
+  reason?: string;
+}
+
+// Bulk operation response
+export interface BulkOperationResponse {
+  totalRequested: number;
+  succeeded: number;
+  failed: number;
+  errors: BulkOperationError[];
+}
+
+// Bulk operation error
+export interface BulkOperationError {
+  candidateId: string;
+  error: string;
 }

@@ -79,3 +79,65 @@ export const useUpdateCandidate = () => {
     },
   });
 };
+
+// Bulk confirm candidates
+export const useBulkConfirmCandidates = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (candidateIds: string[]) =>
+      extractionCandidateApi.bulkConfirmCandidates(candidateIds),
+    onSuccess: (data) => {
+      // Invalidate candidates list
+      queryClient.invalidateQueries({ queryKey: ['extraction-candidates'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+
+      // Show success message
+      const message = `${data.succeeded} candidates confirmed${
+        data.failed > 0 ? `, ${data.failed} failed` : ''
+      }`;
+      console.log(message);
+
+      // Log errors if any
+      if (data.errors.length > 0) {
+        data.errors.forEach(err => {
+          console.error(`Failed to confirm ${err.candidateId}: ${err.error}`);
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to confirm candidates:', error);
+    }
+  });
+};
+
+// Bulk reject candidates
+export const useBulkRejectCandidates = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ candidateIds, reason }: { candidateIds: string[]; reason?: string }) =>
+      extractionCandidateApi.bulkRejectCandidates(candidateIds, reason),
+    onSuccess: (data) => {
+      // Invalidate candidates list
+      queryClient.invalidateQueries({ queryKey: ['extraction-candidates'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+
+      // Show success message
+      const message = `${data.succeeded} candidates rejected${
+        data.failed > 0 ? `, ${data.failed} failed` : ''
+      }`;
+      console.log(message);
+
+      // Log errors if any
+      if (data.errors.length > 0) {
+        data.errors.forEach(err => {
+          console.error(`Failed to reject ${err.candidateId}: ${err.error}`);
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to reject candidates:', error);
+    }
+  });
+};

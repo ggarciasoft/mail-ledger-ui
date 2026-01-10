@@ -1,19 +1,29 @@
-// Processing status
+// Processing status response
 export interface ProcessingStatus {
-  isClassifying: boolean;
-  isExtracting: boolean;
-  classificationProgress?: ProcessingProgress;
-  extractionProgress?: ProcessingProgress;
+  pendingClassification: number;
+  pendingExtraction: number;
+  canClassify: boolean;
+  canExtract: boolean;
+  lastClassificationJob: ProcessingJobInfo | null;
+  lastExtractionJob: ProcessingJobInfo | null;
 }
 
-// Processing progress
-export interface ProcessingProgress {
-  totalItems: number;
-  processedItems: number;
-  successCount: number;
-  failureCount: number;
+// Processing job info
+export interface ProcessingJobInfo {
   startedAt: string;
-  completedAt?: string;
+  completedAt?: string | null;
+  processedCount: number;
+  succeededCount: number;
+  failedCount: number;
+}
+
+// Trigger classification/extraction response
+export interface TriggerResponse {
+  success: boolean;
+  message: string;
+  processedCount: number;
+  succeededCount: number;
+  failedCount: number;
 }
 
 // Trigger classification request

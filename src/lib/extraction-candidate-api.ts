@@ -5,6 +5,9 @@ import type {
   ExtractionCandidateListResponse,
   ConfirmCandidateRequest,
   RejectCandidateRequest,
+  BulkConfirmRequest,
+  BulkRejectRequest,
+  BulkOperationResponse,
 } from '../types/extraction-candidate';
 
 export const extractionCandidateApi = {
@@ -43,6 +46,24 @@ export const extractionCandidateApi = {
   // Update candidate
   updateCandidate: async (id: string, data: ConfirmCandidateRequest): Promise<ExtractionCandidate> => {
     const response = await apiClient.put<ExtractionCandidate>(`/api/extraction-candidates/${id}`, data);
+    return response.data;
+  },
+
+  // Bulk confirm candidates
+  bulkConfirmCandidates: async (candidateIds: string[]): Promise<BulkOperationResponse> => {
+    const response = await apiClient.post<BulkOperationResponse>(
+      '/api/extraction-candidates/bulk-confirm',
+      { candidateIds } as BulkConfirmRequest
+    );
+    return response.data;
+  },
+
+  // Bulk reject candidates
+  bulkRejectCandidates: async (candidateIds: string[], reason?: string): Promise<BulkOperationResponse> => {
+    const response = await apiClient.post<BulkOperationResponse>(
+      '/api/extraction-candidates/bulk-reject',
+      { candidateIds, reason } as BulkRejectRequest
+    );
     return response.data;
   },
 };

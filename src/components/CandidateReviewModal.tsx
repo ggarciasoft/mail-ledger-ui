@@ -121,6 +121,19 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                         {candidate.emailReceivedAt && formatDate(candidate.emailReceivedAt)}
                                     </p>
                                 </div>
+
+                                {/* View Email Button */}
+                                <div className="pt-2">
+                                    <a
+                                        href={`${import.meta.env.VITE_GMAIL_INBOX_URL}#inbox/${candidate.emailMessageId}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                    >
+                                        <Mail className="w-4 h-4" />
+                                        View in Gmail
+                                    </a>
+                                </div>
                             </div>
 
                             <div className="mt-6">
