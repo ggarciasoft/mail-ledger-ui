@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { queryClient } from './lib/query-client';
 import { useAutoLogin } from './hooks/use-auto-login';
+import { useSignalRJobs } from './hooks/use-signalr-jobs';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
 import LoginPage from './pages/LoginPage';
@@ -20,6 +21,9 @@ import SettingsPage from './pages/SettingsPage';
 function AppContent() {
   // Auto-login: fetch user data if authenticated
   useAutoLogin();
+
+  // Connect to SignalR for real-time job updates
+  useSignalRJobs();
 
   return (
     <BrowserRouter>

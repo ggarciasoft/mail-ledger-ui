@@ -13,32 +13,27 @@ export function useJobs(jobType?: JobType) {
 }
 
 /**
- * Hook to get a specific job with auto-refresh
+ * Hook to get a specific job.
+ * Updates are pushed via SignalR, no polling needed.
  */
 export function useJob(id: string | null, enabled = true) {
   return useQuery({
     queryKey: ['jobs', id],
     queryFn: () => jobsApi.getJobById(id!),
     enabled: enabled && !!id,
-    refetchInterval: (query) => {
-      // Auto-refresh every 2 seconds if job is pending or running
-      const data = query.state.data;
-      if (data?.status === 'Pending' || data?.status === 'Running') {
-        return 2000;
-      }
-      return false;
-    },
+    // Removed refetchInterval - now using SignalR for real-time updates
   });
 }
 
 /**
- * Hook to get active jobs with auto-refresh
+ * Hook to get active jobs.
+ * Updates are pushed via SignalR, no polling needed.
  */
 export function useActiveJobs(jobType?: JobType) {
   return useQuery({
     queryKey: ['jobs', 'active', jobType],
     queryFn: () => jobsApi.getActiveJobs(jobType),
-    refetchInterval: 2000, // Refresh every 2 seconds
+    // Removed refetchInterval - now using SignalR for real-time updates
   });
 }
 
