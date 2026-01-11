@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter } from 'lucide-react';
 import { useLogout } from '../hooks/use-auth';
 import { useAuthStore } from '../store/auth-store';
+import ActiveJobsPanel from './ActiveJobsPanel';
 
 export default function AppLayout() {
     const location = useLocation();
@@ -91,6 +92,9 @@ export default function AppLayout() {
             <div className="flex-1 overflow-auto">
                 <Outlet />
             </div>
+
+            {/* Active Jobs Panel */}
+            <ActiveJobsPanel />
         </div>
     );
 }

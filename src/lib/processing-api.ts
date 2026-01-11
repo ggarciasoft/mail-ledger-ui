@@ -13,12 +13,14 @@ export const processingApi = {
   },
 
   // Trigger classification job
-  triggerClassification: async (data: TriggerClassificationRequest = {}): Promise<void> => {
-    await apiClient.post('/api/processing/classify', data);
+  triggerClassification: async (data: TriggerClassificationRequest = {}): Promise<{ jobId: string; message: string }> => {
+    const response = await apiClient.post<{ jobId: string; message: string }>('api/processing/classify', null, { params: data });
+    return response.data;
   },
 
   // Trigger extraction job
-  triggerExtraction: async (data: TriggerExtractionRequest = {}): Promise<void> => {
-    await apiClient.post('/api/processing/extract', data);
+  triggerExtraction: async (data: TriggerExtractionRequest = {}): Promise<{ jobId: string; message: string }> => {
+    const response = await apiClient.post<{ jobId: string; message: string }>('api/processing/extract', null, { params: data });
+    return response.data;
   },
 };

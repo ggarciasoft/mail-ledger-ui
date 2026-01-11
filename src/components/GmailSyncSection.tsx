@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useGmailConnectionStatus, useTriggerGmailSync, useGmailSyncHistory, useConnectGmail } from '../hooks/use-settings';
+import { useJob } from '../hooks/use-jobs';
 import { Mail, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+import JobStatusBadge from './JobStatusBadge';
+import JobProgressBar from './JobProgressBar';
 
 export default function GmailSyncSection() {
     const { data: status, isLoading: statusLoading } = useGmailConnectionStatus();
@@ -8,13 +11,18 @@ export default function GmailSyncSection() {
     const syncMutation = useTriggerGmailSync();
     const connectMutation = useConnectGmail();
     const [maxEmailsInput, setMaxEmailsInput] = useState('50');
+    const [currentJobId, setCurrentJobId] = useState<string | null>(null);
+
+    // Track current job status
+    const { data: currentJob } = useJob(currentJobId);
 
     const handleSync = async () => {
         const maxEmails = parseInt(maxEmailsInput);
         if (isNaN(maxEmails) || maxEmails < 1 || maxEmails > 100) return;
 
         try {
-            await syncMutation.mutateAsync(maxEmails);
+            const result = await syncMutation.mutateAsync(maxEmails);
+            setCurrentJobId(result.jobId);
         } catch (error) {
             console.error('Failed to trigger Gmail sync:', error);
         }
@@ -154,6 +162,35 @@ export default function GmailSyncSection() {
                             Syncing {getDisplayValue()} email{getDisplayValue() !== 1 ? 's' : ''} per operation
                         </p>
                     </div>
+
+                    {/* Current Job Status */}
+                    {currentJob && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700">Sync Job Status</span>
+                                <JobStatusBadge status={currentJob.status} />
+                            </div>
+                            {(currentJob.status === 'Running' || currentJob.status === 'Pending') && (
+                                <JobProgressBar
+                                    progress={currentJob.progress}
+                                    processedItems={currentJob.processedItems}
+                                    totalItems={currentJob.totalItems}
+                                    successCount={currentJob.successCount}
+                                    failureCount={currentJob.failureCount}
+                                />
+                            )}
+                            {currentJob.status === 'Completed' && (
+                                <p className="text-sm text-green-600 mt-2">
+                                    ✓ Sync completed successfully! {currentJob.successCount} emails processed.
+                                </p>
+                            )}
+                            {currentJob.status === 'Failed' && currentJob.errorMessage && (
+                                <p className="text-sm text-red-600 mt-2">
+                                    ✗ {currentJob.errorMessage}
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 

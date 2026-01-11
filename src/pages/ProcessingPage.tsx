@@ -1,18 +1,27 @@
 import { useState } from 'react';
 import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } from '../hooks/use-processing';
+import { useJob } from '../hooks/use-jobs';
 import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle } from 'lucide-react';
+import JobStatusBadge from '../components/JobStatusBadge';
+import JobProgressBar from '../components/JobProgressBar';
 
 export default function ProcessingPage() {
     const [batchSize, setBatchSize] = useState(50);
+    const [classifyJobId, setClassifyJobId] = useState<string | null>(null);
+    const [extractJobId, setExtractJobId] = useState<string | null>(null);
 
     const { data: status, isLoading, error, refetch } = useProcessingStatus();
     const classifyMutation = useTriggerClassification();
     const extractMutation = useTriggerExtraction();
 
+    // Track current jobs
+    const { data: classifyJob } = useJob(classifyJobId);
+    const { data: extractJob } = useJob(extractJobId);
+
     const handleTriggerClassification = async () => {
         try {
-            await classifyMutation.mutateAsync({ batchSize });
-            // Refetch status after triggering
+            const result = await classifyMutation.mutateAsync({ batchSize });
+            setClassifyJobId(result.jobId);
             refetch();
         } catch (error) {
             console.error('Failed to trigger classification:', error);
@@ -21,8 +30,8 @@ export default function ProcessingPage() {
 
     const handleTriggerExtraction = async () => {
         try {
-            await extractMutation.mutateAsync({ batchSize });
-            // Refetch status after triggering
+            const result = await extractMutation.mutateAsync({ batchSize });
+            setExtractJobId(result.jobId);
             refetch();
         } catch (error) {
             console.error('Failed to trigger extraction:', error);
@@ -148,6 +157,45 @@ export default function ProcessingPage() {
                         <FileCheck className="w-5 h-5 mr-2" />
                         {extractMutation.isPending ? 'Processing...' : 'Trigger Extraction'}
                     </button>
+                </div>
+
+                {/* Job Status Display */}
+                <div className="mt-6 space-y-4">
+                    {classifyJob && (
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700">Classification Job</span>
+                                <JobStatusBadge status={classifyJob.status} />
+                            </div>
+                            {(classifyJob.status === 'Running' || classifyJob.status === 'Pending') && (
+                                <JobProgressBar
+                                    progress={classifyJob.progress}
+                                    processedItems={classifyJob.processedItems}
+                                    totalItems={classifyJob.totalItems}
+                                    successCount={classifyJob.successCount}
+                                    failureCount={classifyJob.failureCount}
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    {extractJob && (
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700">Extraction Job</span>
+                                <JobStatusBadge status={extractJob.status} />
+                            </div>
+                            {(extractJob.status === 'Running' || extractJob.status === 'Pending') && (
+                                <JobProgressBar
+                                    progress={extractJob.progress}
+                                    processedItems={extractJob.processedItems}
+                                    totalItems={extractJob.totalItems}
+                                    successCount={extractJob.successCount}
+                                    failureCount={extractJob.failureCount}
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
