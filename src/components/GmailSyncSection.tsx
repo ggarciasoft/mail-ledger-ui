@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useGmailConnectionStatus, useTriggerGmailSync, useGmailSyncHistory, useConnectGmail } from '../hooks/use-settings';
 import { Mail, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
 
@@ -6,13 +7,36 @@ export default function GmailSyncSection() {
     const { data: history, isLoading: historyLoading } = useGmailSyncHistory();
     const syncMutation = useTriggerGmailSync();
     const connectMutation = useConnectGmail();
+    const [maxEmailsInput, setMaxEmailsInput] = useState('50');
 
     const handleSync = async () => {
+        const maxEmails = parseInt(maxEmailsInput);
+        if (isNaN(maxEmails) || maxEmails < 1 || maxEmails > 100) return;
+
         try {
-            await syncMutation.mutateAsync();
+            await syncMutation.mutateAsync(maxEmails);
         } catch (error) {
             console.error('Failed to trigger Gmail sync:', error);
         }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        // Allow empty string or valid numbers
+        if (value === '' || /^\d+$/.test(value)) {
+            setMaxEmailsInput(value);
+        }
+    };
+
+    const isValidInput = () => {
+        if (maxEmailsInput === '') return false;
+        const num = parseInt(maxEmailsInput);
+        return !isNaN(num) && num >= 1 && num <= 100;
+    };
+
+    const getDisplayValue = () => {
+        const num = parseInt(maxEmailsInput);
+        return isNaN(num) ? 50 : num;
     };
 
     const formatDate = (dateString: string) => {
@@ -98,17 +122,38 @@ export default function GmailSyncSection() {
             {/* Manual Sync (only when connected) */}
             {status?.isConnected && (
                 <div className="mb-6">
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Maximum Emails to Sync
+                        </label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="100"
+                            value={maxEmailsInput}
+                            onChange={handleInputChange}
+                            placeholder="50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">Enter a value between 1 and 100 (default: 50)</p>
+                    </div>
                     <button
                         onClick={handleSync}
-                        disabled={syncMutation.isPending}
+                        disabled={syncMutation.isPending || !isValidInput()}
                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <RefreshCw className={`w-4 h-4 mr-2 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
                         {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
                     </button>
-                    <p className="mt-2 text-sm text-gray-500">
-                        Manually trigger a Gmail sync to fetch new emails
-                    </p>
+                    <div className="mt-2 space-y-1">
+                        <p className="text-sm text-gray-600">
+                            Manually trigger a Gmail sync to fetch new emails
+                        </p>
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
+                            Syncing {getDisplayValue()} email{getDisplayValue() !== 1 ? 's' : ''} per operation
+                        </p>
+                    </div>
                 </div>
             )}
 

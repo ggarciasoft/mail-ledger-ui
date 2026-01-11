@@ -4,7 +4,6 @@ export type EmailStatus = 'Pending' | 'Classified' | 'Extracted' | 'Failed';
 // Email entity
 export interface Email {
   id: string;
-  gmailMessageId: string;
   messageId: string;
   subject: string;
   from: string;

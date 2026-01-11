@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Building2 } from 'lucide-react';
+import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Building2, CreditCard, Hash, TrendingUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,7 +16,7 @@ const financialDataSchema = z.object({
     transactionDate: z.string().min(1, 'Transaction date is required'),
     amount: z.number().positive('Amount must be positive'),
     currency: z.string().min(1, 'Currency is required'),
-    merchant: z.string().min(1, 'Merchant name is required'),
+    merchant: z.string().optional(),
     sourceBank: z.string().optional(),
 });
 
@@ -197,7 +197,7 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         <Store className="w-4 h-4 inline mr-1" />
-                                        Merchant *
+                                        Merchant
                                     </label>
                                     <input
                                         {...register('merchant')}
@@ -221,6 +221,102 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                         disabled={candidate.status !== 'Pending'}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     />
+                                </div>
+
+                                {/* Additional Fields Section */}
+                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-4">Additional Information</h4>
+
+                                    {/* Account Information */}
+                                    {(candidate.sourceAccount || candidate.targetAccount) && (
+                                        <div className="mb-4 bg-gray-50 rounded-lg p-3 space-y-2">
+                                            <p className="text-xs font-medium text-gray-500 uppercase mb-2">
+                                                <CreditCard className="w-3 h-3 inline mr-1" />
+                                                Account Details
+                                            </p>
+                                            {candidate.sourceAccount && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-600">Source Account:</span>
+                                                    <span className="font-mono text-gray-900">{candidate.sourceAccount}</span>
+                                                </div>
+                                            )}
+                                            {candidate.targetAccount && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-600">Target Account:</span>
+                                                    <span className="font-mono text-gray-900">{candidate.targetAccount}</span>
+                                                </div>
+                                            )}
+                                            {candidate.targetBank && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-600">Target Bank:</span>
+                                                    <span className="text-gray-900">{candidate.targetBank}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Fees and Tax */}
+                                    {(candidate.fees != null || candidate.tax != null) && (
+                                        <div className="mb-4 bg-gray-50 rounded-lg p-3 space-y-2">
+                                            <p className="text-xs font-medium text-gray-500 uppercase mb-2">
+                                                <DollarSign className="w-3 h-3 inline mr-1" />
+                                                Charges
+                                            </p>
+                                            {candidate.fees != null && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-600">Fees:</span>
+                                                    <span className="text-gray-900">{candidate.currency} {candidate.fees.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {candidate.tax != null && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-600">Tax:</span>
+                                                    <span className="text-gray-900">{candidate.currency} {candidate.tax.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Reference ID */}
+                                    {candidate.referenceId && (
+                                        <div className="mb-4 bg-gray-50 rounded-lg p-3">
+                                            <p className="text-xs font-medium text-gray-500 uppercase mb-1">
+                                                <Hash className="w-3 h-3 inline mr-1" />
+                                                Reference ID
+                                            </p>
+                                            <p className="text-sm font-mono text-gray-900">{candidate.referenceId}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Individual Confidence Scores */}
+                                    {(candidate.amountConfidence != null || candidate.dateConfidence != null || candidate.merchantConfidence != null) && (
+                                        <div className="bg-blue-50 rounded-lg p-3">
+                                            <p className="text-xs font-medium text-blue-700 uppercase mb-2">
+                                                <TrendingUp className="w-3 h-3 inline mr-1" />
+                                                Field Confidence Scores
+                                            </p>
+                                            <div className="space-y-1">
+                                                {candidate.amountConfidence != null && (
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-blue-700">Amount:</span>
+                                                        <span className="font-medium text-blue-900">{(candidate.amountConfidence * 100).toFixed(1)}%</span>
+                                                    </div>
+                                                )}
+                                                {candidate.dateConfidence != null && (
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-blue-700">Date:</span>
+                                                        <span className="font-medium text-blue-900">{(candidate.dateConfidence * 100).toFixed(1)}%</span>
+                                                    </div>
+                                                )}
+                                                {candidate.merchantConfidence != null && (
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-blue-700">Merchant:</span>
+                                                        <span className="font-medium text-blue-900">{(candidate.merchantConfidence * 100).toFixed(1)}%</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </form>
                         </div>

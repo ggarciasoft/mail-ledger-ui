@@ -1,18 +1,23 @@
 // Financial Record entity
 export interface FinancialRecord {
   id: string;
-  extractionCandidateId: string;
   emailId: string;
-  transactionDate: string;
+  type: string;
   amount: number;
   currency: string;
-  merchant: string;
-  category?: string;
-  description?: string;
+  direction: string;
+  merchant?: string;
+  sourceAccount?: string;
   sourceBank?: string;
-  type?: string;
-  confirmedAt: string;
+  targetAccount?: string;
+  targetBank?: string;
+  transactionDate: string;
+  taxAmount?: number;
+  feeAmount?: number;
+  confidence: number;
+  extractionVersion: string;
   createdAt: string;
+  confirmedAt: string;
   
   // Related data
   email?: {

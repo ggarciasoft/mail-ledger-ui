@@ -70,7 +70,7 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                             <Mail className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
                             <div>
                                 <p className="text-sm font-medium text-gray-500">Gmail Message ID</p>
-                                <p className="text-sm text-gray-900 font-mono break-all">{email.gmailMessageId}</p>
+                                <p className="text-sm text-gray-900 font-mono break-all">{email.messageId}</p>
                             </div>
                         </div>
 
@@ -84,16 +84,6 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                             </div>
                         )}
                     </div>
-
-                    {/* Classification Result */}
-                    {email.classificationResult && (
-                        <div className="mb-6">
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">Classification Result</h4>
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <p className="text-sm text-blue-900">{email.classificationResult}</p>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Error Message */}
                     {email.errorMessage && (

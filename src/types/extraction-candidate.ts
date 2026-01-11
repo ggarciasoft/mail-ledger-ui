@@ -3,21 +3,38 @@ export interface ExtractionCandidate {
   id: string;
   emailId: string;
   emailMessageId: string;
-  sourceBank?: string;
-  transactionDate: string;
-  amount: number;
-  currency: string;
-  merchant: string;
-  confidence: number;
-  status: 'Pending' | 'Confirmed' | 'Rejected';
-  rejectionReason?: string | null;
-  confirmedAt?: string | null;
-  rejectedAt?: string | null;
-  createdAt: string;
-  
   emailFrom: string;
   emailReceivedAt: string;
   emailSubject: string;
+  
+  // Core transaction data
+  amount: number;
+  currency: string;
+  merchant: string;
+  transactionDate: string;
+  
+  // Account information
+  sourceAccount?: string | null;
+  targetAccount?: string | null;
+  sourceBank?: string | null;
+  targetBank?: string | null;
+  
+  // Additional details
+  fees?: number | null;
+  tax?: number | null;
+  referenceId?: string | null;
+  
+  // Confidence scores
+  confidence: number; // Overall confidence
+  amountConfidence?: number | null;
+  dateConfidence?: number | null;
+  merchantConfidence?: number | null;
+  
+  // Status
+  status: 'Pending' | 'Confirmed' | 'Rejected';
+  createdAt: string;
+  confirmedAt?: string | null;
+  rejectionReason?: string | null;
 }
 
 // List request
@@ -45,7 +62,7 @@ export interface ConfirmCandidateRequest {
   transactionDate: string;
   amount: number;
   currency: string;
-  merchant: string;
+  merchant?: string;
   sourceBank?: string;
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApiKeys, useCreateApiKey, useDeleteApiKey } from '../hooks/use-settings';
-import { Key, Plus, Trash2, Copy, Check } from 'lucide-react';
+import { Key, Plus, Trash2, Copy, Check, Calendar } from 'lucide-react';
 
 const ALLOWED_SCOPES = [
     { value: 'read:transactions', label: 'Read Transactions', description: 'View financial records' },
@@ -18,6 +18,8 @@ export default function ApiKeysSection() {
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [keyName, setKeyName] = useState('');
     const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+    const [expiresAt, setExpiresAt] = useState<string>('');
+    const [hasExpiration, setHasExpiration] = useState(false);
     const [newKey, setNewKey] = useState<string | null>(null);
     const [copiedKey, setCopiedKey] = useState(false);
 
@@ -27,11 +29,14 @@ export default function ApiKeysSection() {
         try {
             const result = await createMutation.mutateAsync({
                 name: keyName,
-                scopes: selectedScopes
+                scopes: selectedScopes,
+                expiresAt: hasExpiration && expiresAt ? expiresAt : null,
             });
             setNewKey(result.apiKey);
             setKeyName('');
             setSelectedScopes([]);
+            setExpiresAt('');
+            setHasExpiration(false);
             setShowCreateDialog(false);
         } catch (error) {
             console.error('Failed to create API key:', error);
@@ -143,6 +148,11 @@ export default function ApiKeysSection() {
                                 <p className="text-xs text-gray-400 mt-1">
                                     Created: {formatDate(key.createdAt)}
                                     {key.lastUsedAt && ` • Last used: ${formatDate(key.lastUsedAt)}`}
+                                    {key.expiresAt && (
+                                        <span className={`ml-2 ${new Date(key.expiresAt) < new Date() ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+                                            • {new Date(key.expiresAt) < new Date() ? 'Expired' : 'Expires'}: {formatDate(key.expiresAt)}
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                             <button
@@ -201,12 +211,40 @@ export default function ApiKeysSection() {
                                 <p className="text-xs text-red-600 mt-1">Please select at least one scope</p>
                             )}
                         </div>
+                        <div className="mb-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={hasExpiration}
+                                    onChange={(e) => setHasExpiration(e.target.checked)}
+                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Set expiration date</span>
+                            </label>
+                            {hasExpiration && (
+                                <div className="mt-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <Calendar className="w-4 h-4 inline mr-1" />
+                                        Expires At
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={expiresAt}
+                                        onChange={(e) => setExpiresAt(e.target.value)}
+                                        min={new Date().toISOString().split('T')[0]}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+                            )}
+                        </div>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => {
                                     setShowCreateDialog(false);
                                     setKeyName('');
                                     setSelectedScopes([]);
+                                    setExpiresAt('');
+                                    setHasExpiration(false);
                                 }}
                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                             >

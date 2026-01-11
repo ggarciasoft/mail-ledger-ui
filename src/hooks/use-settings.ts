@@ -42,7 +42,7 @@ export const useTriggerGmailSync = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => settingsApi.triggerGmailSync(),
+    mutationFn: (maxEmails: number = 50) => settingsApi.triggerGmailSync(maxEmails),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gmail'] });
       queryClient.invalidateQueries({ queryKey: ['emails'] });

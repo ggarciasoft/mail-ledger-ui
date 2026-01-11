@@ -34,8 +34,8 @@ export const settingsApi = {
     return response.data;
   },
 
-  triggerGmailSync: async (): Promise<void> => {
-    await apiClient.post('/api/gmail/sync');
+  triggerGmailSync: async (maxEmails: number = 50): Promise<void> => {
+    await apiClient.post('/api/gmail/sync', null, { params: { maxEmails } });
   },
 
   getGmailSyncHistory: async (): Promise<GmailSyncHistory> => {

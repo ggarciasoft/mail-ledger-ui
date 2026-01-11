@@ -1,4 +1,4 @@
-import { X, Calendar, DollarSign, Store, Tag, Mail, Lock } from 'lucide-react';
+import { X, Calendar, DollarSign, Store, Mail, Lock, ArrowRight, TrendingUp, CreditCard } from 'lucide-react';
 import type { FinancialRecord } from '../types/financial-record';
 
 interface RecordDetailModalProps {
@@ -85,28 +85,6 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                                     </div>
                                 </div>
 
-                                {record.category && (
-                                    <div className="flex items-start">
-                                        <Tag className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Category</p>
-                                            <p className="text-sm text-gray-900">{record.category}</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {record.sourceBank && (
-                                    <div className="flex items-start">
-                                        <div className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex items-center justify-center">
-                                            🏦
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Source Bank</p>
-                                            <p className="text-sm text-gray-900">{record.sourceBank}</p>
-                                        </div>
-                                    </div>
-                                )}
-
                                 {record.type && (
                                     <div className="flex items-start">
                                         <div className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex items-center justify-center">
@@ -118,14 +96,99 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                                         </div>
                                     </div>
                                 )}
+
+                                <div className="flex items-start">
+                                    <ArrowRight className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500">Direction</p>
+                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${record.direction === 'In' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {record.direction === 'In' ? '↓ Incoming' : '↑ Outgoing'}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
-                            {record.description && (
-                                <div className="mt-4">
-                                    <p className="text-sm font-medium text-gray-500 mb-1">Description</p>
-                                    <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{record.description}</p>
+                            {/* Account Information */}
+                            {(record.sourceAccount || record.targetAccount) && (
+                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                                        <CreditCard className="w-4 h-4 inline mr-1" />
+                                        Account Details
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
+                                        {record.sourceAccount && (
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Source Account</p>
+                                                <p className="text-sm font-mono text-gray-900">{record.sourceAccount}</p>
+                                                {record.sourceBank && (
+                                                    <p className="text-xs text-gray-600 mt-1">{record.sourceBank}</p>
+                                                )}
+                                            </div>
+                                        )}
+                                        {record.targetAccount && (
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Target Account</p>
+                                                <p className="text-sm font-mono text-gray-900">{record.targetAccount}</p>
+                                                {record.targetBank && (
+                                                    <p className="text-xs text-gray-600 mt-1">{record.targetBank}</p>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
+
+                            {/* Fees and Tax */}
+                            {(record.feeAmount != null || record.taxAmount != null) && (
+                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                                        <DollarSign className="w-4 h-4 inline mr-1" />
+                                        Additional Charges
+                                    </h4>
+                                    <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                                        {record.feeAmount != null && (
+                                            <div className="flex justify-between">
+                                                <span className="text-sm text-gray-600">Fees:</span>
+                                                <span className="text-sm font-medium text-gray-900">
+                                                    {formatCurrency(record.feeAmount, record.currency)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {record.taxAmount != null && (
+                                            <div className="flex justify-between">
+                                                <span className="text-sm text-gray-600">Tax:</span>
+                                                <span className="text-sm font-medium text-gray-900">
+                                                    {formatCurrency(record.taxAmount, record.currency)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Confidence Score */}
+                            <div className="mt-6 pt-6 border-t border-gray-200">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                                    <TrendingUp className="w-4 h-4 inline mr-1" />
+                                    Extraction Quality
+                                </h4>
+                                <div className="bg-blue-50 rounded-lg p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm text-blue-700">Confidence Score</span>
+                                        <span className="text-lg font-bold text-blue-900">
+                                            {(record.confidence * 100).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-blue-200 rounded-full h-2">
+                                        <div
+                                            className="bg-blue-600 h-2 rounded-full transition-all"
+                                            style={{ width: `${record.confidence * 100}%` }}
+                                        ></div>
+                                    </div>
+                                    <p className="text-xs text-blue-600 mt-2">Version: {record.extractionVersion}</p>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Source Email */}
@@ -159,7 +222,11 @@ export default function RecordDetailModal({ record, onClose }: RecordDetailModal
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-gray-500">Record ID:</span>
-                                    <span className="text-gray-900 font-mono">{record.id}</span>
+                                    <span className="text-gray-900 font-mono text-xs">{record.id}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500">Created:</span>
+                                    <span className="text-gray-900">{formatDate(record.createdAt)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-500">Confirmed:</span>

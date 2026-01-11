@@ -14,6 +14,7 @@ export interface ApiKey {
 export interface CreateApiKeyRequest {
   name: string;
   scopes: string[];
+  expiresAt?: string | null;
 }
 
 // Create API Key response

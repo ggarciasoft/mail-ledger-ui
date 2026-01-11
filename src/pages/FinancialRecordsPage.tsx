@@ -82,10 +82,13 @@ export default function FinancialRecordsPage() {
                                             Amount
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Category
+                                            Type
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Source
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Source Account
                                         </th>
                                     </tr>
                                 </thead>
@@ -108,11 +111,16 @@ export default function FinancialRecordsPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500">{record.category || '-'}</div>
+                                                <div className="text-sm text-gray-500">{record.type || '-'}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-500 truncate max-w-xs">
-                                                    {record.email?.subject || '-'}
+                                                    {record.sourceBank || '-'}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-500 font-mono truncate max-w-xs">
+                                                    {record.sourceAccount || '-'}
                                                 </div>
                                             </td>
                                         </tr>
