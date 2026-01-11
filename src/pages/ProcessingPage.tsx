@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } from '../hooks/use-processing';
-import { useJob } from '../hooks/use-jobs';
-import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle } from 'lucide-react';
+import { useJob, useJobs } from '../hooks/use-jobs';
+import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import JobStatusBadge from '../components/JobStatusBadge';
 import JobProgressBar from '../components/JobProgressBar';
 
@@ -13,6 +13,9 @@ export default function ProcessingPage() {
     const { data: status, isLoading, error, refetch } = useProcessingStatus();
     const classifyMutation = useTriggerClassification();
     const extractMutation = useTriggerExtraction();
+
+    // Get all jobs for history
+    const { data: allJobs = [] } = useJobs();
 
     // Track current jobs
     const { data: classifyJob } = useJob(classifyJobId);
@@ -161,7 +164,7 @@ export default function ProcessingPage() {
 
                 {/* Job Status Display */}
                 <div className="mt-6 space-y-4">
-                    {classifyJob && (
+                    {classifyJob?.status && (
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium text-gray-700">Classification Job</span>
@@ -179,7 +182,7 @@ export default function ProcessingPage() {
                         </div>
                     )}
 
-                    {extractJob && (
+                    {extractJob?.status && (
                         <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium text-gray-700">Extraction Job</span>
@@ -214,19 +217,19 @@ export default function ProcessingPage() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <p className="text-sm text-gray-600">Processed</p>
-                                    <p className="text-2xl font-semibold text-gray-900">{status.lastClassificationJob.processedCount}</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{status.lastClassificationJob.processed}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Succeeded</p>
                                     <p className="text-2xl font-semibold text-green-600 flex items-center">
-                                        {status.lastClassificationJob.succeededCount}
+                                        {status.lastClassificationJob.succeeded}
                                         <CheckCircle2 className="w-5 h-5 ml-1" />
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Failed</p>
                                     <p className="text-2xl font-semibold text-red-600 flex items-center">
-                                        {status.lastClassificationJob.failedCount}
+                                        {status.lastClassificationJob.failed}
                                         <XCircle className="w-5 h-5 ml-1" />
                                     </p>
                                 </div>
@@ -245,19 +248,19 @@ export default function ProcessingPage() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <p className="text-sm text-gray-600">Processed</p>
-                                    <p className="text-2xl font-semibold text-gray-900">{status.lastExtractionJob.processedCount}</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{status.lastExtractionJob.processed}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Succeeded</p>
                                     <p className="text-2xl font-semibold text-green-600 flex items-center">
-                                        {status.lastExtractionJob.succeededCount}
+                                        {status.lastExtractionJob.succeeded}
                                         <CheckCircle2 className="w-5 h-5 ml-1" />
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Failed</p>
                                     <p className="text-2xl font-semibold text-red-600 flex items-center">
-                                        {status.lastExtractionJob.failedCount}
+                                        {status.lastExtractionJob.failed}
                                         <XCircle className="w-5 h-5 ml-1" />
                                     </p>
                                 </div>
@@ -279,6 +282,65 @@ export default function ProcessingPage() {
                             <p className="text-sm text-gray-500 max-w-sm mx-auto">
                                 Trigger a classification or extraction job to process emails and extract financial data.
                             </p>
+                        </div>
+                    )}
+
+                    {/* Job History */}
+                    {allJobs.length > 0 && (
+                        <div className="bg-white rounded-lg border border-gray-200 p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Jobs</h3>
+                            <div className="space-y-3">
+                                {allJobs.slice(0, 10).map((job) => (
+                                    <div
+                                        key={job.id}
+                                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="font-medium text-gray-900">
+                                                    {job.jobType === 'EmailSync' && 'Email Sync'}
+                                                    {job.jobType === 'Classification' && 'Classification'}
+                                                    {job.jobType === 'Extraction' && 'Extraction'}
+                                                </span>
+                                                <JobStatusBadge status={job.status} />
+                                            </div>
+                                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                <span className="flex items-center gap-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    {formatDate(job.createdAt)}
+                                                </span>
+                                                {job.totalItems > 0 && (
+                                                    <span>
+                                                        {job.processedItems} / {job.totalItems} items
+                                                    </span>
+                                                )}
+                                                {job.successCount > 0 && (
+                                                    <span className="text-green-600">
+                                                        ✓ {job.successCount} success
+                                                    </span>
+                                                )}
+                                                {job.failureCount > 0 && (
+                                                    <span className="text-red-600">
+                                                        ✗ {job.failureCount} failed
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {(job.status === 'Running' || job.status === 'Pending') && job.totalItems > 0 && (
+                                                <div className="mt-2">
+                                                    <JobProgressBar
+                                                        progress={job.progress}
+                                                        processedItems={job.processedItems}
+                                                        totalItems={job.totalItems}
+                                                    />
+                                                </div>
+                                            )}
+                                            {job.errorMessage && (
+                                                <p className="mt-2 text-sm text-red-600">{job.errorMessage}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>

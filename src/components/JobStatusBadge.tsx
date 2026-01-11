@@ -54,6 +54,9 @@ export default function JobStatusBadge({ status, className = '' }: JobStatusBadg
     };
 
     const config = getStatusConfig();
+    if (config == null) {
+        return null;
+    }
     const Icon = config.icon;
 
     return (

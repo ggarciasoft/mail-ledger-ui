@@ -4,17 +4,17 @@ export interface ProcessingStatus {
   pendingExtraction: number;
   canClassify: boolean;
   canExtract: boolean;
-  lastClassificationJob: ProcessingJobInfo | null;
-  lastExtractionJob: ProcessingJobInfo | null;
+  lastClassificationJob: JobStatus | null;
+  lastExtractionJob: JobStatus | null;
 }
 
 // Processing job info
-export interface ProcessingJobInfo {
+export interface JobStatus {
   startedAt: string;
-  completedAt?: string | null;
-  processedCount: number;
-  succeededCount: number;
-  failedCount: number;
+  completedAt?: string;
+  processed: number;
+  succeeded: number;
+  failed: number;
 }
 
 // Trigger classification/extraction response
