@@ -13,6 +13,7 @@ import EmailsPage from './pages/EmailsPage';
 import ExtractionCandidatesPage from './pages/ExtractionCandidatesPage';
 import FinancialRecordsPage from './pages/FinancialRecordsPage';
 import ProcessingPage from './pages/ProcessingPage';
+import JobsPage from './pages/JobsPage';
 import RulesPage from './pages/RulesPage';
 import SettingsPage from './pages/SettingsPage';
 
@@ -38,6 +39,7 @@ function AppContent() {
             <Route path="/extraction-candidates" element={<ExtractionCandidatesPage />} />
             <Route path="/financial-records" element={<FinancialRecordsPage />} />
             <Route path="/processing" element={<ProcessingPage />} />
+            <Route path="/jobs" element={<JobsPage />} />
             <Route path="/rules" element={<RulesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
