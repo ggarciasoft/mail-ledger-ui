@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { signalRService } from '../lib/signalr-service';
 import { useAuthStore } from '../store/auth-store';
@@ -33,7 +33,6 @@ export function useSignalRJobs() {
     const queryClient = useQueryClient();
     const user = useAuthStore((state) => state.user);
     const token = useAuthStore((state) => state.accessToken);
-    const connectionInitialized = useRef(false);
 
     useEffect(() => {
         if (!user || !token) {
@@ -41,13 +40,6 @@ export function useSignalRJobs() {
             return;
         }
 
-        // Prevent duplicate connections in React StrictMode
-        if (connectionInitialized.current) {
-            console.log('SignalR: Connection already initialized');
-            return;
-        }
-
-        connectionInitialized.current = true;
         const abortController = new AbortController();
         let unsubscribeUpdated: (() => void) | undefined;
         let unsubscribeCompleted: (() => void) | undefined;
@@ -140,6 +132,7 @@ export function useSignalRJobs() {
 
                         // Invalidate related queries to refresh data
                         queryClient.invalidateQueries({ queryKey: ['processing-status'] });
+                        queryClient.invalidateQueries({ queryKey: ['processing', 'status'] });
                         queryClient.invalidateQueries({ queryKey: ['emails'] });
                         queryClient.invalidateQueries({ queryKey: ['extraction-candidates'] });
                         queryClient.invalidateQueries({ queryKey: ['jobs'] }); // Invalidate all job queries
@@ -172,7 +165,6 @@ export function useSignalRJobs() {
                 );
             } catch (error) {
                 console.error('Failed to connect to SignalR:', error);
-                connectionInitialized.current = false;
             }
         };
 
@@ -182,7 +174,6 @@ export function useSignalRJobs() {
         return () => {
             console.log('SignalR: Cleaning up connection');
             abortController.abort();
-            connectionInitialized.current = false;
 
             // Unsubscribe from events
             if (unsubscribeUpdated) unsubscribeUpdated();

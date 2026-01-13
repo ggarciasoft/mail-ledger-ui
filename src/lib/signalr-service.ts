@@ -7,16 +7,23 @@ class SignalRService {
     private connection: signalR.HubConnection | null = null;
     private listeners: Map<string, Set<JobEventCallback>> = new Map();
     private isConnecting = false;
+    private currentUserId: string | null = null;
 
     async connect(userId: string, accessToken: string, abortSignal?: AbortSignal): Promise<void> {
-        if (this.connection?.state === signalR.HubConnectionState.Connected) {
-            console.log('SignalR already connected');
+        // If already connected for this user, skip
+        if (this.connection?.state === signalR.HubConnectionState.Connected && this.currentUserId === userId) {
+            console.log('SignalR already connected for this user');
             return;
         }
 
+        // If connecting, wait for it to complete
         if (this.isConnecting) {
-            console.log('SignalR connection already in progress');
-            return;
+            console.log('SignalR connection already in progress, waiting...');
+            // Wait a bit and check again
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (this.connection?.state === signalR.HubConnectionState.Connected) {
+                return;
+            }
         }
 
         // Check if already aborted
@@ -27,6 +34,7 @@ class SignalRService {
 
         try {
             this.isConnecting = true;
+            this.currentUserId = userId;
 
             console.log('SignalR: Building connection to', import.meta.env.VITE_API_URL + '/hubs/jobs');
 
@@ -61,8 +69,8 @@ class SignalRService {
             this.connection.onreconnected(() => {
                 console.log('SignalR: Reconnected');
                 // Rejoin user group after reconnection
-                if (this.connection) {
-                    this.connection.invoke('JoinUserGroup', userId).catch((err) => {
+                if (this.connection && this.currentUserId) {
+                    this.connection.invoke('JoinUserGroup', this.currentUserId).catch((err) => {
                         console.error('Failed to rejoin user group:', err);
                     });
                 }
@@ -70,12 +78,14 @@ class SignalRService {
 
             this.connection.onclose((error) => {
                 console.log('SignalR: Connection closed', error);
+                this.isConnecting = false;
             });
 
             // Check abort signal before starting
             if (abortSignal?.aborted) {
                 console.log('SignalR: Aborted before connection start');
                 this.connection = null;
+                this.currentUserId = null;
                 return;
             }
 
@@ -87,6 +97,7 @@ class SignalRService {
                 console.log('SignalR: Aborted after connection start, disconnecting');
                 await this.connection.stop();
                 this.connection = null;
+                this.currentUserId = null;
                 return;
             }
 
@@ -108,6 +119,7 @@ class SignalRService {
                 url: import.meta.env.VITE_API_URL + '/hubs/jobs'
             });
             this.connection = null;
+            this.currentUserId = null;
             throw error;
         } finally {
             this.isConnecting = false;
@@ -139,6 +151,7 @@ class SignalRService {
                 console.error('SignalR disconnect error:', error);
             } finally {
                 this.connection = null;
+                this.currentUserId = null;
             }
         }
     }

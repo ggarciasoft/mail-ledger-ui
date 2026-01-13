@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } from '../hooks/use-processing';
-import { useJob } from '../hooks/use-jobs';
+import { useJob, useActiveJobs } from '../hooks/use-jobs';
 import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import JobStatusBadge from '../components/JobStatusBadge';
 import JobProgressBar from '../components/JobProgressBar';
@@ -9,32 +9,73 @@ export default function ProcessingPage() {
     const [batchSize, setBatchSize] = useState(50);
     const [classifyJobId, setClassifyJobId] = useState<string | null>(null);
     const [extractJobId, setExtractJobId] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const { data: status, isLoading, error, refetch } = useProcessingStatus();
     const classifyMutation = useTriggerClassification();
     const extractMutation = useTriggerExtraction();
+    const { data: activeJobs } = useActiveJobs();
 
     // Track current jobs
     const { data: classifyJob } = useJob(classifyJobId);
     const { data: extractJob } = useJob(extractJobId);
 
+    // Check if any jobs are currently running or mutations are pending
+    const hasRunningJobs = activeJobs && activeJobs.length > 0;
+    const isAnyMutationPending = classifyMutation.isPending || extractMutation.isPending;
+
     const handleTriggerClassification = async () => {
+        // Clear previous messages
+        setSuccessMessage(null);
+        setErrorMessage(null);
+
+        // Check if a job is already running or mutation is pending
+        if (hasRunningJobs || classifyMutation.isPending) {
+            setErrorMessage('Cannot start a new job while another job is running. Please wait for the current job to complete.');
+            return;
+        }
+
         try {
             const result = await classifyMutation.mutateAsync({ batchSize });
             setClassifyJobId(result.jobId);
+            setSuccessMessage(`Classification job started successfully! Processing up to ${batchSize} emails.`);
             refetch();
-        } catch (error) {
+
+            // Clear success message after 5 seconds
+            setTimeout(() => setSuccessMessage(null), 5000);
+        } catch (error: any) {
             console.error('Failed to trigger classification:', error);
+            // Extract error message from API response
+            const errorMsg = error?.response?.data?.error || 'Failed to start classification job. Please try again.';
+            setErrorMessage(errorMsg);
         }
     };
 
     const handleTriggerExtraction = async () => {
+        // Clear previous messages
+        setSuccessMessage(null);
+        setErrorMessage(null);
+
+        // Check if a job is already running or mutation is pending
+        if (hasRunningJobs || extractMutation.isPending) {
+            setErrorMessage('Cannot start a new job while another job is running. Please wait for the current job to complete.');
+            return;
+        }
+
         try {
             const result = await extractMutation.mutateAsync({ batchSize });
             setExtractJobId(result.jobId);
+            setSuccessMessage(`Extraction job started successfully! Processing up to ${batchSize} candidates.`);
             refetch();
-        } catch (error) {
+
+            // Clear success message after 5 seconds
+            setTimeout(() => setSuccessMessage(null), 5000);
+        } catch (error: any) {
             console.error('Failed to trigger extraction:', error);
+            // Extract error message from API response
+            const errorMsg = error?.response?.data?.error || 'Failed to start extraction job. Please try again.';
+            setErrorMessage(errorMsg);
         }
     };
 
@@ -71,6 +112,26 @@ export default function ProcessingPage() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Processing Management</h1>
                 <p className="text-gray-600">Trigger batch AI processing jobs for email classification and data extraction</p>
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+                <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-green-800 font-medium">{successMessage}</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
+                    <AlertCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-red-800 font-medium">{errorMessage}</p>
+                    </div>
+                </div>
+            )}
 
             {/* Status Overview */}
             {!isLoading && status && (
@@ -142,60 +203,21 @@ export default function ProcessingPage() {
                 <div className="flex gap-4">
                     <button
                         onClick={handleTriggerClassification}
-                        disabled={!status?.canClassify || classifyMutation.isPending || isLoading}
+                        disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading}
                         className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Zap className="w-5 h-5 mr-2" />
-                        {classifyMutation.isPending ? 'Processing...' : 'Trigger Classification'}
+                        {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
                     </button>
 
                     <button
                         onClick={handleTriggerExtraction}
-                        disabled={!status?.canExtract || extractMutation.isPending || isLoading}
+                        disabled={!status?.canExtract || isAnyMutationPending || hasRunningJobs || isLoading}
                         className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <FileCheck className="w-5 h-5 mr-2" />
-                        {extractMutation.isPending ? 'Processing...' : 'Trigger Extraction'}
+                        {extractMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Extraction'}
                     </button>
-                </div>
-
-                {/* Job Status Display */}
-                <div className="mt-6 space-y-4">
-                    {classifyJob?.status && (
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-gray-700">Classification Job</span>
-                                <JobStatusBadge status={classifyJob.status} />
-                            </div>
-                            {(classifyJob.status === 'Running' || classifyJob.status === 'Pending') && (
-                                <JobProgressBar
-                                    progress={classifyJob.progress}
-                                    processedItems={classifyJob.processedItems}
-                                    totalItems={classifyJob.totalItems}
-                                    successCount={classifyJob.successCount}
-                                    failureCount={classifyJob.failureCount}
-                                />
-                            )}
-                        </div>
-                    )}
-
-                    {extractJob?.status && (
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-gray-700">Extraction Job</span>
-                                <JobStatusBadge status={extractJob.status} />
-                            </div>
-                            {(extractJob.status === 'Running' || extractJob.status === 'Pending') && (
-                                <JobProgressBar
-                                    progress={extractJob.progress}
-                                    processedItems={extractJob.processedItems}
-                                    totalItems={extractJob.totalItems}
-                                    successCount={extractJob.successCount}
-                                    failureCount={extractJob.failureCount}
-                                />
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
 
