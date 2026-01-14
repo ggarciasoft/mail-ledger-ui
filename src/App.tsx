@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { queryClient } from './lib/query-client';
 import { useAutoLogin } from './hooks/use-auto-login';
 import { useSignalRJobs } from './hooks/use-signalr-jobs';
-import { useAuthStore } from './store/auth-store';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
 import LandingPage from './pages/LandingPage';
@@ -19,17 +18,7 @@ import ProcessingPage from './pages/ProcessingPage';
 import JobsPage from './pages/JobsPage';
 import RulesPage from './pages/RulesPage';
 import SettingsPage from './pages/SettingsPage';
-
-// Component to handle home route redirect logic
-function HomeRoute() {
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <LandingPage />;
-}
+import { WorkflowPage } from './pages/WorkflowPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -41,8 +30,9 @@ function AppContent() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomeRoute />} />
+        {/* Public routes - Landing page accessible to everyone */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/home" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -59,6 +49,7 @@ function AppContent() {
             <Route path="/processing" element={<ProcessingPage />} />
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/rules" element={<RulesPage />} />
+            <Route path="/workflow" element={<WorkflowPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>

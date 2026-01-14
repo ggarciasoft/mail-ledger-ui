@@ -11,8 +11,11 @@ import {
     Clock,
     Lock
 } from 'lucide-react';
+import { useAuthStore } from '../store/auth-store';
 
 export default function LandingPage() {
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             {/* Navigation */}
@@ -26,18 +29,29 @@ export default function LandingPage() {
                             </span>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <Link
-                                to="/login"
-                                className="text-slate-700 hover:text-indigo-600 font-medium transition-colors"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
-                            >
-                                Get Started
-                            </Link>
+                            {isAuthenticated ? (
+                                <Link
+                                    to="/dashboard"
+                                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
+                                >
+                                    Go to Dashboard
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="text-slate-700 hover:text-indigo-600 font-medium transition-colors"
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
+                                    >
+                                        Get Started
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
