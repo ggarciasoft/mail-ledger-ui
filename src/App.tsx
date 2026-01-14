@@ -19,6 +19,15 @@ import JobsPage from './pages/JobsPage';
 import RulesPage from './pages/RulesPage';
 import SettingsPage from './pages/SettingsPage';
 import { WorkflowPage } from './pages/WorkflowPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import SecurityPage from './pages/SecurityPage';
+import AboutPage from './pages/AboutPage';
+import BlogPage from './pages/BlogPage';
+import ContactPage from './pages/ContactPage';
+import FeaturesPage from './pages/FeaturesPage';
+import ApiPage from './pages/ApiPage';
+import PricingPage from './pages/PricingPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -37,6 +46,15 @@ function AppContent() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/security" element={<SecurityPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/api" element={<ApiPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
 
 
         {/* Protected routes */}

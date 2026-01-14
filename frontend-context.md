@@ -175,6 +175,22 @@ Empty state for first-time users
 Profile section (view user info)
 Gmail sync section (OAuth connection, manual sync)
 API keys section (create, view, revoke keys)
+8. Legal & Security
+Privacy Policy page
+Terms of Service page
+Security detailed overview page
+Public navigation bar shared across non-app pages
+
+9. Company Pages
+About Us page with mission and values
+Blog page with article grid
+Contact page with information and form layout
+
+10. Product Pages
+Features page detailing capabilities
+Pricing page with plan comparison
+API page with developer documentation
+
 State Management
 Server State (React Query)
 Automatic caching with stale-while-revalidate
@@ -245,14 +261,13 @@ Create a
 
 VITE_API_BASE_URL=http://localhost:5000/api
 Recent Updates
-Landing Page: Added comprehensive landing page with hero section, features, how-it-works, and benefits
-Routing Update: Changed root route to landing page for unauthenticated users, dashboard moved to /dashboard
+Legal Pages: Added Privacy, Terms, and Security pages with shared public navigation
+Landing Page: Updated footer links and main navigation structure
 Bulk Operations UI: Added floating toolbar for bulk confirm/reject with slide-up animation
 Processing Page: Implemented batch job triggers with real-time progress tracking
 Financial Records: Added 8-filter system with advanced filtering capabilities
 Candidate Review: Enhanced modal with editable fields and confidence display
 API Keys: Implemented API key management UI in settings
-Email Verification: Added email verification flow (UI only, backend ready)
 Future Enhancements
 Dark mode toggle
 Toast notifications for user feedback
