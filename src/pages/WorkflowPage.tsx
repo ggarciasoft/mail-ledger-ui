@@ -3,6 +3,36 @@ import { useWorkflowConfiguration, useUpdateWorkflowConfiguration } from '../hoo
 import { WorkflowMode, type UpdateWorkflowConfigRequest } from '../types/workflow';
 import { Calendar, Hand, ArrowRight } from 'lucide-react';
 import { cronToHumanReadable } from '../lib/cron-utils';
+import moment from 'moment-timezone';
+
+// Helper function to group timezones by region
+function getGroupedTimezones() {
+    const allZones = moment.tz.names();
+    const grouped: { region: string; zones: string[] }[] = [];
+    const regionMap = new Map<string, string[]>();
+
+    // Group by region (first part before /)
+    allZones.forEach((zone) => {
+        const parts = zone.split('/');
+        if (parts.length > 1) {
+            const region = parts[0];
+            if (!regionMap.has(region)) {
+                regionMap.set(region, []);
+            }
+            regionMap.get(region)!.push(zone);
+        }
+    });
+
+    // Convert to array and sort
+    regionMap.forEach((zones, region) => {
+        // Skip regions already shown in common sections
+        if (!['America', 'Europe', 'Asia', 'Pacific'].includes(region)) {
+            grouped.push({ region, zones: zones.sort() });
+        }
+    });
+
+    return grouped.sort((a, b) => a.region.localeCompare(b.region));
+}
 
 export function WorkflowPage() {
     const { data: config, isLoading } = useWorkflowConfiguration();
@@ -185,24 +215,52 @@ export function WorkflowPage() {
                 <div className="bg-white rounded-lg shadow p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-2">Timezone</h2>
                     <p className="text-sm text-gray-600 mb-4">
-                        Schedules will run in your selected timezone
+                        Schedules will run in your selected timezone. Current: {moment.tz(timeZoneId).format('z')}
                     </p>
                     <select
                         value={timeZoneId}
                         onChange={(e) => setTimeZoneId(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     >
-                        <option value="America/New_York">Eastern Time (ET)</option>
-                        <option value="America/Chicago">Central Time (CT)</option>
-                        <option value="America/Denver">Mountain Time (MT)</option>
-                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                        <option value="America/Anchorage">Alaska Time (AKT)</option>
-                        <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
-                        <option value="UTC">UTC (Coordinated Universal Time)</option>
-                        <option value="Europe/London">London (GMT/BST)</option>
-                        <option value="Europe/Paris">Paris (CET/CEST)</option>
-                        <option value="Asia/Tokyo">Tokyo (JST)</option>
-                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                        {/* Detected timezone */}
+                        <option value={moment.tz.guess()}>
+                            🌍 Auto-detected: {moment.tz.guess()} ({moment.tz(moment.tz.guess()).format('z')})
+                        </option>
+
+                        <option disabled>──────────</option>
+
+                        {/* Common US timezones */}
+                        <optgroup label="🇺🇸 United States">
+                            <option value="America/New_York">Eastern Time (ET)</option>
+                            <option value="America/Chicago">Central Time (CT)</option>
+                            <option value="America/Denver">Mountain Time (MT)</option>
+                            <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            <option value="America/Anchorage">Alaska Time (AKT)</option>
+                            <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                        </optgroup>
+
+                        {/* Common international */}
+                        <optgroup label="🌎 International">
+                            <option value="UTC">UTC (Coordinated Universal Time)</option>
+                            <option value="Europe/London">London (GMT/BST)</option>
+                            <option value="Europe/Paris">Paris (CET/CEST)</option>
+                            <option value="Asia/Tokyo">Tokyo (JST)</option>
+                            <option value="Asia/Shanghai">Shanghai (CST)</option>
+                            <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                        </optgroup>
+
+                        <option disabled>──────────</option>
+
+                        {/* All timezones grouped by region */}
+                        {getGroupedTimezones().map((group) => (
+                            <optgroup key={group.region} label={group.region}>
+                                {group.zones.map((zone) => (
+                                    <option key={zone} value={zone}>
+                                        {zone.replace(/_/g, ' ')} ({moment.tz(zone).format('z')})
+                                    </option>
+                                ))}
+                            </optgroup>
+                        ))}
                     </select>
                 </div>
             )}
