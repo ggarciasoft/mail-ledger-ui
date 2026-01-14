@@ -13,6 +13,7 @@ export interface WorkflowConfiguration {
   emailSyncBatchSize: number;
   classificationBatchSize: number;
   extractionBatchSize: number;
+  timeZoneId: string;
 }
 
 export interface UpdateWorkflowConfigRequest {
@@ -24,4 +25,5 @@ export interface UpdateWorkflowConfigRequest {
   emailSyncBatchSize: number;
   classificationBatchSize: number;
   extractionBatchSize: number;
+  timeZoneId: string;
 }

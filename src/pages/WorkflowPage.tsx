@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWorkflowConfiguration, useUpdateWorkflowConfiguration } from '../hooks/use-workflow';
 import { WorkflowMode, type UpdateWorkflowConfigRequest } from '../types/workflow';
 import { Calendar, Hand, ArrowRight } from 'lucide-react';
@@ -8,17 +8,18 @@ export function WorkflowPage() {
     const { data: config, isLoading } = useWorkflowConfiguration();
     const updateConfig = useUpdateWorkflowConfiguration();
 
-    const [mode, setMode] = useState<WorkflowMode>(config?.mode ?? WorkflowMode.Manual);
-    const [emailSyncSchedule, setEmailSyncSchedule] = useState(config?.emailSyncSchedule ?? '0 * * * *');
-    const [classificationSchedule, setClassificationSchedule] = useState(config?.classificationSchedule ?? '0 * * * *');
-    const [extractionSchedule, setExtractionSchedule] = useState(config?.extractionSchedule ?? '0 * * * *');
-    const [pipelineSchedule, setPipelineSchedule] = useState(config?.pipelineSchedule ?? '0 9 * * *');
-    const [emailSyncBatchSize, setEmailSyncBatchSize] = useState(config?.emailSyncBatchSize ?? 50);
-    const [classificationBatchSize, setClassificationBatchSize] = useState(config?.classificationBatchSize ?? 20);
-    const [extractionBatchSize, setExtractionBatchSize] = useState(config?.extractionBatchSize ?? 20);
+    const [mode, setMode] = useState<WorkflowMode>(WorkflowMode.Manual);
+    const [emailSyncSchedule, setEmailSyncSchedule] = useState('0 * * * *');
+    const [classificationSchedule, setClassificationSchedule] = useState('0 * * * *');
+    const [extractionSchedule, setExtractionSchedule] = useState('0 * * * *');
+    const [pipelineSchedule, setPipelineSchedule] = useState('0 9 * * *');
+    const [emailSyncBatchSize, setEmailSyncBatchSize] = useState(50);
+    const [classificationBatchSize, setClassificationBatchSize] = useState(20);
+    const [extractionBatchSize, setExtractionBatchSize] = useState(20);
+    const [timeZoneId, setTimeZoneId] = useState('America/New_York');
 
-    // Update local state when config loads
-    useState(() => {
+    // Update local state when config loads from backend
+    useEffect(() => {
         if (config) {
             setMode(config.mode);
             setEmailSyncSchedule(config.emailSyncSchedule ?? '0 * * * *');
@@ -28,8 +29,9 @@ export function WorkflowPage() {
             setEmailSyncBatchSize(config.emailSyncBatchSize);
             setClassificationBatchSize(config.classificationBatchSize);
             setExtractionBatchSize(config.extractionBatchSize);
+            setTimeZoneId(config.timeZoneId);
         }
-    });
+    }, [config]);
 
     const handleSave = async () => {
         const request: UpdateWorkflowConfigRequest = {
@@ -41,6 +43,7 @@ export function WorkflowPage() {
             emailSyncBatchSize,
             classificationBatchSize,
             extractionBatchSize,
+            timeZoneId,
         };
 
         await updateConfig.mutateAsync(request);
@@ -174,6 +177,33 @@ export function WorkflowPage() {
                         value={pipelineSchedule}
                         onChange={setPipelineSchedule}
                     />
+                </div>
+            )}
+
+            {/* Timezone Selection */}
+            {mode !== WorkflowMode.Manual && (
+                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 className="text-xl font-semibold mb-2">Timezone</h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                        Schedules will run in your selected timezone
+                    </p>
+                    <select
+                        value={timeZoneId}
+                        onChange={(e) => setTimeZoneId(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                        <option value="America/New_York">Eastern Time (ET)</option>
+                        <option value="America/Chicago">Central Time (CT)</option>
+                        <option value="America/Denver">Mountain Time (MT)</option>
+                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                        <option value="America/Anchorage">Alaska Time (AKT)</option>
+                        <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                        <option value="Europe/London">London (GMT/BST)</option>
+                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                    </select>
                 </div>
             )}
 
