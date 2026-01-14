@@ -53,12 +53,14 @@ src/
 │   ├── StatusBadge.tsx
 │   └── TopMerchantsChart.tsx
 │
-├── pages/                   # 11 page components
+├── pages/                   # 12 page components
+│   ├── LandingPage.tsx
 │   ├── DashboardPage.tsx
 │   ├── EmailsPage.tsx
 │   ├── ExtractionCandidatesPage.tsx
 │   ├── FinancialRecordsPage.tsx
 │   ├── ForgotPasswordPage.tsx
+│   ├── JobsPage.tsx
 │   ├── LoginPage.tsx
 │   ├── ProcessingPage.tsx
 │   ├── RegisterPage.tsx
@@ -108,19 +110,28 @@ src/
 └── index.css                # Global styles (TailwindCSS)
 Application Routes
 Public Routes
+/ - Landing page (product information for new users)
 /login - User login
 /register - User registration
 /forgot-password - Password reset request
 /reset-password - Password reset confirmation
 Protected Routes (Require Authentication)
-/ - Dashboard (overview statistics)
+/dashboard - Dashboard (overview statistics)
 /emails - Email management
 /extraction-candidates - Review and confirm/reject candidates
 /financial-records - View confirmed financial records
 /processing - Trigger batch processing jobs
+/jobs - View and manage background jobs
 /rules - Manage email filtering rules
 /settings - User profile, Gmail sync, API keys
 Key Features
+0. Landing Page
+Hero section with product overview
+Features grid highlighting key capabilities
+How-it-works flow (4-step process)
+Benefits section with visual examples
+Call-to-action sections
+Responsive design with modern aesthetics
 1. Dashboard
 Period-based statistics (7d, 30d, 90d, 1y, all)
 Overview cards (total records, pending candidates, processed emails)
@@ -234,6 +245,8 @@ Create a
 
 VITE_API_BASE_URL=http://localhost:5000/api
 Recent Updates
+Landing Page: Added comprehensive landing page with hero section, features, how-it-works, and benefits
+Routing Update: Changed root route to landing page for unauthenticated users, dashboard moved to /dashboard
 Bulk Operations UI: Added floating toolbar for bulk confirm/reject with slide-up animation
 Processing Page: Implemented batch job triggers with real-time progress tracking
 Financial Records: Added 8-filter system with advanced filtering capabilities

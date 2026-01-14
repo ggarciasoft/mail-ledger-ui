@@ -10,7 +10,7 @@ export default function AppLayout() {
     const user = useAuthStore((state) => state.user);
 
     const navigation = [
-        { name: 'Dashboard', href: '/', icon: Home },
+        { name: 'Dashboard', href: '/dashboard', icon: Home },
         { name: 'Emails', href: '/emails', icon: Mail },
         { name: 'Extraction Candidates', href: '/extraction-candidates', icon: FileCheck },
         { name: 'Financial Records', href: '/financial-records', icon: DollarSign },
@@ -21,9 +21,6 @@ export default function AppLayout() {
     ];
 
     const isActive = (path: string) => {
-        if (path === '/') {
-            return location.pathname === '/';
-        }
         return location.pathname.startsWith(path);
     };
 

@@ -29,7 +29,7 @@ export default function LoginPage() {
         try {
             setErrorMessage('');
             await loginMutation.mutateAsync(data);
-            navigate('/');
+            navigate('/dashboard');
         } catch (error: any) {
             setErrorMessage(error.response?.data?.message || 'Login failed. Please try again.');
         }
