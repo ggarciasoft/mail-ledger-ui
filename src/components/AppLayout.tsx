@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter, ListChecks, Workflow } from 'lucide-react';
+import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter, ListChecks, Workflow, CreditCard } from 'lucide-react';
 import { useLogout } from '../hooks/use-auth';
 import { useAuthStore } from '../store/auth-store';
 import ActiveJobsPanel from './ActiveJobsPanel';
@@ -18,6 +18,7 @@ export default function AppLayout() {
         { name: 'Jobs', href: '/jobs', icon: ListChecks },
         { name: 'Rules', href: '/rules', icon: Filter },
         { name: 'Workflow', href: '/workflow', icon: Workflow },
+        { name: 'Subscription', href: '/subscription', icon: CreditCard },
         { name: 'Settings', href: '/settings', icon: Settings },
     ];
 

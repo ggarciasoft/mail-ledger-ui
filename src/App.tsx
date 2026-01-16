@@ -28,6 +28,7 @@ import ContactPage from './pages/ContactPage';
 import FeaturesPage from './pages/FeaturesPage';
 import ApiPage from './pages/ApiPage';
 import PricingPage from './pages/PricingPage';
+import { SubscriptionPage } from './pages/SubscriptionPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -68,6 +69,7 @@ function AppContent() {
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/rules" element={<RulesPage />} />
             <Route path="/workflow" element={<WorkflowPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
