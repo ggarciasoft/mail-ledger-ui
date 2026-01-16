@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useWorkflowConfiguration, useUpdateWorkflowConfiguration } from '../hooks/use-workflow';
+import { useMySubscription } from '../hooks/use-subscription';
 import { WorkflowMode, type UpdateWorkflowConfigRequest } from '../types/workflow';
-import { Calendar, Hand, ArrowRight } from 'lucide-react';
+import { Calendar, Hand, ArrowRight, Lock } from 'lucide-react';
 import { cronToHumanReadable } from '../lib/cron-utils';
+import { UpgradePrompt } from '../components/UpgradePrompt';
 import moment from 'moment-timezone';
 
 // Helper function to group timezones by region
@@ -36,6 +38,7 @@ function getGroupedTimezones() {
 
 export function WorkflowPage() {
     const { data: config, isLoading } = useWorkflowConfiguration();
+    const { data: subscription, isLoading: subscriptionLoading } = useMySubscription();
     const updateConfig = useUpdateWorkflowConfiguration();
 
     const [mode, setMode] = useState<WorkflowMode>(WorkflowMode.Manual);
@@ -79,9 +82,12 @@ export function WorkflowPage() {
         await updateConfig.mutateAsync(request);
     };
 
-    if (isLoading) {
+    if (isLoading || subscriptionLoading) {
         return <div className="flex items-center justify-center h-64">Loading...</div>;
     }
+
+    const canUseWorkflowAutomation = subscription?.subscriptionPlan.canUseWorkflowAutomation ?? false;
+    const isUsingRestrictedMode = mode !== WorkflowMode.Manual && !canUseWorkflowAutomation;
 
     return (
         <div className="container mx-auto p-6 max-w-4xl">
@@ -123,16 +129,23 @@ export function WorkflowPage() {
 
                     {/* Separate Mode */}
                     <div
-                        onClick={() => setMode(WorkflowMode.Separate)}
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition ${mode === WorkflowMode.Separate
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                        onClick={() => canUseWorkflowAutomation && setMode(WorkflowMode.Separate)}
+                        className={`border-2 rounded-lg p-4 transition relative ${!canUseWorkflowAutomation
+                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                            : mode === WorkflowMode.Separate
+                                ? 'border-blue-500 bg-blue-50 cursor-pointer'
+                                : 'border-gray-200 hover:border-gray-300 cursor-pointer'
                             }`}
                     >
                         <div className="flex items-start">
                             <Calendar className="w-6 h-6 mr-3 mt-1 text-green-600" />
                             <div className="flex-1">
-                                <h3 className="font-semibold text-lg">Separate Schedules</h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-semibold text-lg">Separate Schedules</h3>
+                                    {!canUseWorkflowAutomation && (
+                                        <Lock className="w-4 h-4 text-gray-500" />
+                                    )}
+                                </div>
                                 <p className="text-gray-600 text-sm">
                                     Each job runs independently on its own schedule.
                                 </p>
@@ -149,16 +162,23 @@ export function WorkflowPage() {
 
                     {/* Sequential Mode */}
                     <div
-                        onClick={() => setMode(WorkflowMode.Sequential)}
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition ${mode === WorkflowMode.Sequential
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                        onClick={() => canUseWorkflowAutomation && setMode(WorkflowMode.Sequential)}
+                        className={`border-2 rounded-lg p-4 transition relative ${!canUseWorkflowAutomation
+                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                            : mode === WorkflowMode.Sequential
+                                ? 'border-blue-500 bg-blue-50 cursor-pointer'
+                                : 'border-gray-200 hover:border-gray-300 cursor-pointer'
                             }`}
                     >
                         <div className="flex items-start">
                             <ArrowRight className="w-6 h-6 mr-3 mt-1 text-purple-600" />
                             <div className="flex-1">
-                                <h3 className="font-semibold text-lg">Sequential Pipeline</h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-semibold text-lg">Sequential Pipeline</h3>
+                                    {!canUseWorkflowAutomation && (
+                                        <Lock className="w-4 h-4 text-gray-500" />
+                                    )}
+                                </div>
                                 <p className="text-gray-600 text-sm">
                                     Jobs run in sequence: Sync → Classify → Extract
                                 </p>
@@ -173,6 +193,16 @@ export function WorkflowPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Upgrade Prompt */}
+                {!canUseWorkflowAutomation && (
+                    <div className="mt-4">
+                        <UpgradePrompt
+                            feature="Workflow Automation"
+                            message="Upgrade to Basic or higher to enable automated workflow schedules."
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Configuration based on selected mode */}
@@ -310,11 +340,23 @@ export function WorkflowPage() {
             {/* Save Button */}
             <button
                 onClick={handleSave}
-                disabled={updateConfig.isPending}
+                disabled={updateConfig.isPending || isUsingRestrictedMode}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
                 {updateConfig.isPending ? 'Saving...' : 'Save Configuration'}
             </button>
+
+            {isUsingRestrictedMode && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 flex items-start gap-3">
+                    <Lock className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-medium">Workflow automation is not available on your plan</p>
+                        <p className="text-sm mt-1">
+                            Please switch to Manual mode or upgrade your subscription to save this configuration.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {updateConfig.isSuccess && (
                 <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">

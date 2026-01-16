@@ -9,6 +9,7 @@ interface EmailProviderCardProps {
     onSync: () => void;
     onDisconnect: () => void;
     isSyncing?: boolean;
+    disabled?: boolean;
 }
 
 const providerConfig = {
@@ -32,7 +33,8 @@ export function EmailProviderCard({
     onConnect,
     onSync,
     onDisconnect,
-    isSyncing = false
+    isSyncing = false,
+    disabled = false
 }: EmailProviderCardProps) {
     const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
     const config = providerConfig[provider];
@@ -79,7 +81,8 @@ export function EmailProviderCard({
                 {!isConnected ? (
                     <button
                         onClick={onConnect}
-                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md ${config.buttonColor} transition-colors`}
+                        disabled={disabled}
+                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md ${config.buttonColor} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                         <ExternalLink className="w-4 h-4" />
                         Connect {config.name}
