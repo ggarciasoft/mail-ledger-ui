@@ -6,7 +6,7 @@ import type { ProcessingJob, JobType } from '../types/processing-job';
  */
 export async function getJobs(jobType?: JobType): Promise<ProcessingJob[]> {
   const params = jobType ? { jobType } : {};
-  const response = await apiClient.get<ProcessingJob[]>('api/jobs', { params });
+  const response = await apiClient.get<ProcessingJob[]>('/jobs', { params });
   return response.data;
 }
 
@@ -14,7 +14,7 @@ export async function getJobs(jobType?: JobType): Promise<ProcessingJob[]> {
  * Get a specific job by ID
  */
 export async function getJobById(id: string): Promise<ProcessingJob> {
-  const response = await apiClient.get<ProcessingJob>(`api/jobs/${id}`);
+  const response = await apiClient.get<ProcessingJob>(`/jobs/${id}`);
   return response.data;
 }
 
@@ -23,7 +23,7 @@ export async function getJobById(id: string): Promise<ProcessingJob> {
  */
 export async function getActiveJobs(jobType?: JobType): Promise<ProcessingJob[]> {
   const params = jobType ? { jobType } : {};
-  const response = await apiClient.get<ProcessingJob[]>('api/jobs/active', { params });
+  const response = await apiClient.get<ProcessingJob[]>('/jobs/active', { params });
   return response.data;
 }
 
@@ -31,5 +31,5 @@ export async function getActiveJobs(jobType?: JobType): Promise<ProcessingJob[]>
  * Cancel a job
  */
 export async function cancelJob(id: string): Promise<void> {
-  await apiClient.delete(`api/jobs/${id}`);
+  await apiClient.delete(`/jobs/${id}`);
 }

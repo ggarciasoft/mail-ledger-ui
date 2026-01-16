@@ -1,7 +1,7 @@
 import { Settings as SettingsIcon } from 'lucide-react';
 import ProfileSection from '../components/ProfileSection';
 import ApiKeysSection from '../components/ApiKeysSection';
-import GmailSyncSection from '../components/GmailSyncSection';
+import { EmailConnectionsSection } from '../components/EmailConnectionsSection';
 
 export default function SettingsPage() {
     return (
@@ -12,14 +12,14 @@ export default function SettingsPage() {
                     <SettingsIcon className="w-8 h-8 mr-3" />
                     Settings
                 </h1>
-                <p className="text-gray-600">Manage your profile, API keys, and Gmail integration</p>
+                <p className="text-gray-600">Manage your profile, API keys, and email integrations</p>
             </div>
 
             {/* Settings Sections */}
             <div className="space-y-6">
                 <ProfileSection />
                 <ApiKeysSection />
-                <GmailSyncSection />
+                <EmailConnectionsSection />
             </div>
         </div>
     );

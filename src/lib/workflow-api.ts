@@ -3,11 +3,11 @@ import type { WorkflowConfiguration, UpdateWorkflowConfigRequest } from '../type
 
 export const workflowApi = {
   getConfiguration: async (): Promise<WorkflowConfiguration> => {
-    const { data } = await apiClient.get('api/workflow/configuration');
+    const { data } = await apiClient.get('/workflow/configuration');
     return data;
   },
 
   updateConfiguration: async (config: UpdateWorkflowConfigRequest): Promise<void> => {
-    await apiClient.put('api/workflow/configuration', config);
+    await apiClient.put('/workflow/configuration', config);
   },
 };

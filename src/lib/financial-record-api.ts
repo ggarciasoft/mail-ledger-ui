@@ -9,7 +9,7 @@ import type {
 export const financialRecordApi = {
   // Get records list with filters and pagination
   getRecords: async (params: FinancialRecordListRequest = {}): Promise<FinancialRecordListResponse> => {
-    const response = await apiClient.get<FinancialRecordListResponse>('/api/financial-records', {
+    const response = await apiClient.get<FinancialRecordListResponse>('/financial-records', {
       params: {
         page: params.page || 1,
         pageSize: params.pageSize || 20,
@@ -30,13 +30,13 @@ export const financialRecordApi = {
 
   // Get single record by ID
   getRecordById: async (id: string): Promise<FinancialRecord> => {
-    const response = await apiClient.get<FinancialRecord>(`/api/financial-records/${id}`);
+    const response = await apiClient.get<FinancialRecord>(`/financial-records/${id}`);
     return response.data;
   },
 
   // Get statistics
   getStatistics: async (): Promise<FinancialRecordStatistics> => {
-    const response = await apiClient.get<FinancialRecordStatistics>('/api/financial-records/statistics');
+    const response = await apiClient.get<FinancialRecordStatistics>('/financial-records/statistics');
     return response.data;
   },
 };

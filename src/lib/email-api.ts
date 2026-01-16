@@ -9,7 +9,7 @@ import type {
 export const emailApi = {
   // Get emails list with filters and pagination
   getEmails: async (params: EmailListRequest = {}): Promise<EmailListResponse> => {
-    const response = await apiClient.get<EmailListResponse>('/api/emails', {
+    const response = await apiClient.get<EmailListResponse>('/emails', {
       params: {
         page: params.page || 1,
         pageSize: params.pageSize || 20,
@@ -24,13 +24,13 @@ export const emailApi = {
 
   // Get single email by ID
   getEmailById: async (id: string): Promise<Email> => {
-    const response = await apiClient.get<Email>(`/api/emails/${id}`);
+    const response = await apiClient.get<Email>(`/emails/${id}`);
     return response.data;
   },
 
   // Get email statistics
   getStatistics: async (): Promise<EmailStatistics> => {
-    const response = await apiClient.get<EmailStatistics>('/api/emails/statistics');
+    const response = await apiClient.get<EmailStatistics>('/emails/statistics');
     return response.data;
   },
 };
