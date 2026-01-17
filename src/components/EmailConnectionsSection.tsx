@@ -127,7 +127,7 @@ export function EmailConnectionsSection() {
 
     // Check if user can connect more email accounts
     const connectedCount = connections?.filter(c => c.isConnected).length || 0;
-    const emailConnectionLimit = usage?.gmailAccountsLimit || 0;
+    const emailConnectionLimit = usage?.emailAccountsLimit || 0;
     const canConnectMore = connectedCount < emailConnectionLimit;
     const isAtLimit = connectedCount >= emailConnectionLimit;
 

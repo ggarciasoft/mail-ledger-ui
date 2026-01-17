@@ -96,9 +96,9 @@ export function SubscriptionPage() {
                             limit={usage.emailLimit}
                         />
                         <UsageProgress
-                            label="Gmail Accounts"
-                            current={usage.gmailAccountsConnected}
-                            limit={usage.gmailAccountsLimit}
+                            label="Email Accounts"
+                            current={usage.emailAccountsConnected}
+                            limit={usage.emailAccountsLimit}
                         />
                         <UsageProgress
                             label="API Keys"
@@ -145,8 +145,8 @@ export function SubscriptionPage() {
                             <div
                                 key={plan.id}
                                 className={`bg-white rounded-lg shadow-md border-2 p-6 ${isCurrentPlan
-                                        ? 'border-blue-500 ring-2 ring-blue-200'
-                                        : 'border-gray-200 hover:border-blue-300'
+                                    ? 'border-blue-500 ring-2 ring-blue-200'
+                                    : 'border-gray-200 hover:border-blue-300'
                                     } transition-all`}
                             >
                                 <div className="mb-4">
@@ -169,20 +169,20 @@ export function SubscriptionPage() {
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2 text-sm">
-                                        {plan.maxGmailAccounts > 0 ? (
+                                        {plan.maxEmailAccounts > 0 ? (
                                             <>
-                                                <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                                <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
                                                 <span>
-                                                    {plan.maxGmailAccounts === Number.MAX_SAFE_INTEGER
+                                                    {plan.maxEmailAccounts === Number.MAX_SAFE_INTEGER
                                                         ? 'Unlimited'
-                                                        : plan.maxGmailAccounts}{' '}
-                                                    Gmail account{plan.maxGmailAccounts !== 1 ? 's' : ''}
+                                                        : plan.maxEmailAccounts}{' '}
+                                                    email account{plan.maxEmailAccounts !== 1 ? 's' : ''}
                                                 </span>
                                             </>
                                         ) : (
                                             <>
                                                 <X className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                                                <span className="text-gray-500">No Gmail accounts</span>
+                                                <span className="text-gray-500">No email accounts</span>
                                             </>
                                         )}
                                     </li>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useExtractionCandidates, useBulkConfirmCandidates, useBulkRejectCandidates } from '../hooks/use-extraction-candidates';
+import { useMySubscription } from '../hooks/use-subscription';
 import { FileCheck, AlertCircle, Mail } from 'lucide-react';
 import CandidateReviewModal from '../components/CandidateReviewModal';
 import ConfidenceMeter from '../components/ConfidenceMeter';
@@ -13,8 +14,10 @@ export default function ExtractionCandidatesPage() {
     const [selectedCandidate, setSelectedCandidate] = useState<ExtractionCandidate | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showRejectDialog, setShowRejectDialog] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const { data, isLoading, error, params, setPage } = useExtractionCandidates();
+    const { data: subscription } = useMySubscription();
     const bulkConfirm = useBulkConfirmCandidates();
     const bulkReject = useBulkRejectCandidates();
 
@@ -64,8 +67,13 @@ export default function ExtractionCandidatesPage() {
         try {
             await bulkConfirm.mutateAsync(selectedIds);
             setSelectedIds([]);
-        } catch (error) {
+            setErrorMessage(null);
+        } catch (error: any) {
             console.error('Bulk confirm failed:', error);
+            const message = error?.response?.data?.message || error?.message || 'Failed to confirm candidates';
+            setErrorMessage(message);
+            // Auto-dismiss after 10 seconds
+            setTimeout(() => setErrorMessage(null), 10000);
         }
     };
 
@@ -74,8 +82,13 @@ export default function ExtractionCandidatesPage() {
             await bulkReject.mutateAsync({ candidateIds: selectedIds, reason });
             setSelectedIds([]);
             setShowRejectDialog(false);
-        } catch (error) {
+            setErrorMessage(null);
+        } catch (error: any) {
             console.error('Bulk reject failed:', error);
+            const message = error?.response?.data?.message || error?.message || 'Failed to reject candidates';
+            setErrorMessage(message);
+            // Auto-dismiss after 10 seconds
+            setTimeout(() => setErrorMessage(null), 10000);
         }
     };
 
@@ -100,6 +113,8 @@ export default function ExtractionCandidatesPage() {
         .filter(c => c.status === 'Pending')
         .every(c => selectedIds.includes(c.id)) && pendingCount > 0;
 
+    const canUseBulkOperations = subscription?.subscriptionPlan?.canUseBulkOperations ?? false;
+
     return (
         <div className="p-8 max-w-7xl mx-auto">
             {/* Header */}
@@ -111,23 +126,60 @@ export default function ExtractionCandidatesPage() {
 
                 {/* Select All Button */}
                 {pendingCount > 0 && (
-                    <button
-                        onClick={handleSelectAll}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
-                    >
-                        <input
-                            type="checkbox"
-                            checked={allPendingSelected}
-                            readOnly
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 pointer-events-none"
-                        />
-                        {allPendingSelected ? 'Deselect All' : 'Select All'}
-                    </button>
+                    <div className="relative group">
+                        <button
+                            onClick={handleSelectAll}
+                            disabled={!canUseBulkOperations}
+                            className={`px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2 ${canUseBulkOperations
+                                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={allPendingSelected}
+                                readOnly
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 pointer-events-none"
+                            />
+                            {allPendingSelected ? 'Deselect All' : 'Select All'}
+                        </button>
+                        {!canUseBulkOperations && (
+                            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                Bulk operations is disabled for your subscription plan.
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
 
+            {/* Error Notification */}
+            {errorMessage && (
+                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start animate-slide-up">
+                    <AlertCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <h3 className="text-red-900 font-semibold mb-1">Bulk Operation Failed</h3>
+                        <p className="text-red-700 text-sm">{errorMessage}</p>
+                        {errorMessage.toLowerCase().includes('subscription') && (
+                            <a
+                                href="/settings"
+                                className="inline-block mt-2 text-sm text-red-800 underline hover:text-red-900"
+                            >
+                                Upgrade your subscription →
+                            </a>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => setErrorMessage(null)}
+                        className="text-red-600 hover:text-red-800"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+
             {/* Bulk Action Toolbar */}
-            {selectedIds.length > 0 && (
+            {selectedIds.length > 0 && canUseBulkOperations && (
                 <BulkActionToolbar
                     selectedCount={selectedIds.length}
                     onConfirm={handleBulkConfirm}
@@ -166,14 +218,14 @@ export default function ExtractionCandidatesPage() {
                                     }`}
                             >
                                 {/* Checkbox */}
-                                {candidate.status === 'Pending' && (
+                                {candidate.status === 'Pending' && canUseBulkOperations && (
                                     <div className="absolute top-4 right-4">
                                         <input
                                             type="checkbox"
                                             checked={selectedIds.includes(candidate.id)}
                                             onChange={(e) => handleToggleSelect(candidate.id, e as any)}
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                            className="w-5 h-5 border-gray-300 rounded focus:ring-blue-500 text-blue-600 cursor-pointer"
                                         />
                                     </div>
                                 )}

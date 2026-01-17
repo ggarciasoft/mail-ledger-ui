@@ -23,7 +23,7 @@ export interface SubscriptionPlan {
   description: string;
   monthlyPrice: number;
   monthlyEmailLimit: number;
-  maxGmailAccounts: number;
+  maxEmailAccounts: number;
   maxApiKeys: number;
   historyRetentionDays: number;
   canExport: boolean;
@@ -48,8 +48,8 @@ export interface UserSubscription {
 export interface SubscriptionUsage {
   emailsProcessed: number;
   emailLimit: number;
-  gmailAccountsConnected: number;
-  gmailAccountsLimit: number;
+  emailAccountsConnected: number;
+  emailAccountsLimit: number;
   apiKeysCreated: number;
   apiKeysLimit: number;
 }

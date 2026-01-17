@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } from '../hooks/use-processing';
+import { useSubscriptionUsage } from '../hooks/use-subscription';
 import { useJob, useActiveJobs } from '../hooks/use-jobs';
 import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import JobStatusBadge from '../components/JobStatusBadge';
@@ -13,6 +14,7 @@ export default function ProcessingPage() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const { data: status, isLoading, error, refetch } = useProcessingStatus();
+    const { data: usage } = useSubscriptionUsage();
     const classifyMutation = useTriggerClassification();
     const extractMutation = useTriggerExtraction();
     const { data: activeJobs } = useActiveJobs();
@@ -24,6 +26,9 @@ export default function ProcessingPage() {
     // Check if any jobs are currently running or mutations are pending
     const hasRunningJobs = activeJobs && activeJobs.length > 0;
     const isAnyMutationPending = classifyMutation.isPending || extractMutation.isPending;
+
+    // Check if email limit is reached
+    const emailLimitReached = usage ? usage.emailsProcessed >= usage.emailLimit : false;
 
     const handleTriggerClassification = async () => {
         // Clear previous messages
@@ -201,14 +206,22 @@ export default function ProcessingPage() {
                 </div>
 
                 <div className="flex gap-4">
-                    <button
-                        onClick={handleTriggerClassification}
-                        disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading}
-                        className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Zap className="w-5 h-5 mr-2" />
-                        {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
-                    </button>
+                    <div className="relative group">
+                        <button
+                            onClick={handleTriggerClassification}
+                            disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading || emailLimitReached}
+                            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Zap className="w-5 h-5 mr-2" />
+                            {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
+                        </button>
+                        {emailLimitReached && (
+                            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                Monthly email limit reached. Please upgrade your subscription.
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                        )}
+                    </div>
 
                     <button
                         onClick={handleTriggerExtraction}
