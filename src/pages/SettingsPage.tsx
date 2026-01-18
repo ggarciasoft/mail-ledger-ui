@@ -2,6 +2,7 @@ import { Settings as SettingsIcon } from 'lucide-react';
 import ProfileSection from '../components/ProfileSection';
 import ApiKeysSection from '../components/ApiKeysSection';
 import { EmailConnectionsSection } from '../components/EmailConnectionsSection';
+import NotificationPreferencesSection from '../components/NotificationPreferencesSection';
 
 export default function SettingsPage() {
     return (
@@ -18,6 +19,7 @@ export default function SettingsPage() {
             {/* Settings Sections */}
             <div className="space-y-6">
                 <ProfileSection />
+                <NotificationPreferencesSection />
                 <ApiKeysSection />
                 <EmailConnectionsSection />
             </div>

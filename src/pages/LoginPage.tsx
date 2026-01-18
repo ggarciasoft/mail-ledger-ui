@@ -31,7 +31,14 @@ export default function LoginPage() {
             await loginMutation.mutateAsync(data);
             navigate('/dashboard');
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Login failed. Please try again.');
+            // Extract error message from different possible formats
+            const message =
+                error.response?.data?.error ||
+                error.response?.data?.message ||
+                error.response?.data?.title ||
+                error.message ||
+                'Login failed. Please try again.';
+            setErrorMessage(message);
         }
     };
 
