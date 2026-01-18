@@ -67,6 +67,7 @@ export interface ChangePasswordResponse {
 
 export interface VerifyEmailRequest {
   token: string;
+  email: string;
 }
 
 export interface VerifyEmailResponse {
