@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { emailApi } from '../lib/email-api';
 import type { EmailListRequest, EmailStatus } from '../types/email';
 import { useState } from 'react';
@@ -55,5 +55,29 @@ export const useEmailStatistics = () => {
   return useQuery({
     queryKey: ['emails', 'statistics'],
     queryFn: emailApi.getStatistics,
+  });
+};
+
+export const useDeleteEmail = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (emailId: string) => emailApi.deleteEmail(emailId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['emails'] });
+      queryClient.invalidateQueries({ queryKey: ['emails', 'statistics'] });
+    },
+  });
+};
+
+export const useBulkDeleteEmails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (emailIds: string[]) => emailApi.bulkDeleteEmails(emailIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['emails'] });
+      queryClient.invalidateQueries({ queryKey: ['emails', 'statistics'] });
+    },
   });
 };

@@ -26,7 +26,7 @@ export const useFinancialRecords = (initialParams: FinancialRecordListRequest = 
   };
 
   const setSorting = (
-    sortBy: 'transactionDate' | 'amount' | 'merchantName',
+    sortBy: 'transactionDate' | 'amount' | 'merchant',
     sortDirection: 'asc' | 'desc'
   ) => {
     setParams((prev) => ({ ...prev, sortBy, sortDirection }));
@@ -38,6 +38,7 @@ export const useFinancialRecords = (initialParams: FinancialRecordListRequest = 
     setPage,
     setFilters,
     setSorting,
+    filters: params,
   };
 };
 

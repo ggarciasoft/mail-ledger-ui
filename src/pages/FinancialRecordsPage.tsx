@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { useFinancialRecords } from '../hooks/use-financial-records';
-import { DollarSign, AlertCircle } from 'lucide-react';
+import { DollarSign, AlertCircle, Download } from 'lucide-react';
 import RecordFilters from '../components/RecordFilters';
 import RecordDetailModal from '../components/RecordDetailModal';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
 import type { FinancialRecord } from '../types/financial-record';
+import { financialRecordApi } from '../lib/financial-record-api';
+import { FeatureGate } from '../components/FeatureGate';
 
 export default function FinancialRecordsPage() {
     const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | null>(null);
-    const { data, isLoading, error, setPage, setFilters } = useFinancialRecords();
+    const [isExporting, setIsExporting] = useState(false);
+    const [exportError, setExportError] = useState<string | null>(null);
+    const { data, isLoading, error, setPage, setFilters, filters } = useFinancialRecords();
 
     const formatCurrency = (amount: number, currency: string) => {
         return new Intl.NumberFormat('en-US', {
@@ -24,6 +28,21 @@ export default function FinancialRecordsPage() {
             day: 'numeric',
             year: 'numeric',
         }).format(new Date(dateString));
+    };
+
+    const handleExport = async (format: 'csv' | 'json') => {
+        try {
+            setIsExporting(true);
+            setExportError(null);
+
+            // Extract current filter values from React Query state or filters state
+            await financialRecordApi.exportRecords(format, filters);
+
+        } catch (err: any) {
+            setExportError(err?.response?.data?.error || 'Failed to export records');
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     if (error) {
@@ -45,10 +64,41 @@ export default function FinancialRecordsPage() {
     return (
         <div className="p-8 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Records</h1>
-                <p className="text-gray-600">Immutable source of truth for confirmed transactions</p>
+            <div className="mb-8 flex justify-between items-start">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Records</h1>
+                    <p className="text-gray-600">Immutable source of truth for confirmed transactions</p>
+                </div>
+
+                <FeatureGate feature="export">
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => handleExport('csv')}
+                            disabled={isExporting || !data?.items || data.items.length === 0}
+                            className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            {isExporting ? 'Exporting...' : 'Export CSV'}
+                        </button>
+                        <button
+                            onClick={() => handleExport('json')}
+                            disabled={isExporting || !data?.items || data.items.length === 0}
+                            className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            {isExporting ? 'Exporting...' : 'Export JSON'}
+                        </button>
+                    </div>
+                </FeatureGate>
             </div>
+
+            {/* Export Error */}
+            {exportError && (
+                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+                    <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
+                    <div className="text-red-800">{exportError}</div>
+                </div>
+            )}
 
             {/* Filters */}
             <RecordFilters onFiltersChange={setFilters} />
