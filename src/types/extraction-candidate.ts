@@ -10,7 +10,8 @@ export interface ExtractionCandidate {
   // Core transaction data
   amount: number;
   currency: string;
-  merchant: string;
+  merchant: string; // Normalized merchant
+  merchantOriginal?: string | null; // Original AI-extracted merchant
   transactionDate: string;
   
   // Account information
