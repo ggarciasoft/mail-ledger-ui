@@ -14,6 +14,7 @@ export interface FinancialRecord {
   transactionDate: string;
   taxAmount?: number;
   feeAmount?: number;
+  category?: string | null;
   confidence: number;
   extractionVersion: string;
   createdAt: string;

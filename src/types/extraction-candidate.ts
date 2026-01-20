@@ -24,6 +24,7 @@ export interface ExtractionCandidate {
   fees?: number | null;
   tax?: number | null;
   referenceId?: string | null;
+  category?: string | null;
   
   // Confidence scores
   confidence: number; // Overall confidence
@@ -65,6 +66,7 @@ export interface ConfirmCandidateRequest {
   currency: string;
   merchant?: string;
   sourceBank?: string;
+  category?: string;
 }
 
 // Reject request

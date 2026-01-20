@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { ExtractionCandidate } from '../types/extraction-candidate';
 import ConfidenceMeter from './ConfidenceMeter';
+import CategoryAutocomplete from './CategoryAutocomplete';
 import { useConfirmCandidate, useRejectCandidate } from '../hooks/use-extraction-candidates';
 
 interface CandidateReviewModalProps {
@@ -18,6 +19,7 @@ const financialDataSchema = z.object({
     currency: z.string().min(1, 'Currency is required'),
     merchant: z.string().optional(),
     sourceBank: z.string().optional(),
+    category: z.string().optional(),
 });
 
 type FinancialDataForm = z.infer<typeof financialDataSchema>;
@@ -42,6 +44,7 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
             currency: candidate.currency,
             merchant: candidate.merchant,
             sourceBank: candidate.sourceBank || '',
+            category: candidate.category || '',
         } : undefined,
     });
 
