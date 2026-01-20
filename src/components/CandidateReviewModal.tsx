@@ -32,6 +32,7 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors, isDirty },
     } = useForm<FinancialDataForm>({
         resolver: zodResolver(financialDataSchema),
@@ -194,17 +195,85 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                     </div>
                                 </div>
 
+                                {/* Merchant - Show both original and normalized if different */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        <Store className="w-4 h-4 inline mr-1" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <Store className="w-4 h-4 inline mr-2" />
                                         Merchant
                                     </label>
-                                    <input
-                                        {...register('merchant')}
-                                        type="text"
-                                        disabled={candidate.status !== 'Pending'}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                    />
+
+                                    {candidate.merchantOriginal && candidate.merchantOriginal !== candidate.merchant ? (
+                                        <div className="space-y-3">
+                                            <p className="text-xs text-gray-500">
+                                                Select a merchant name to start with:
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {/* Normalized Merchant Option */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setValue('merchant', candidate.merchant, { shouldDirty: true })}
+                                                    disabled={candidate.status !== 'Pending'}
+                                                    className={`flex flex-col items-start p-3 border-2 rounded-lg transition-colors text-left ${candidate.status !== 'Pending'
+                                                            ? 'opacity-60 cursor-not-allowed border-gray-200'
+                                                            : 'border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 cursor-pointer'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-center justify-between w-full mb-1">
+                                                        <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">
+                                                            Normalized
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm font-medium text-gray-900 break-all">
+                                                        {candidate.merchant}
+                                                    </span>
+                                                </button>
+
+                                                {/* Original Merchant Option */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setValue('merchant', candidate.merchantOriginal || '', { shouldDirty: true })}
+                                                    disabled={candidate.status !== 'Pending'}
+                                                    className={`flex flex-col items-start p-3 border-2 rounded-lg transition-colors text-left ${candidate.status !== 'Pending'
+                                                            ? 'opacity-60 cursor-not-allowed border-gray-200'
+                                                            : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 cursor-pointer'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-center justify-between w-full mb-1">
+                                                        <span className="text-xs bg-gray-600 text-white px-2 py-0.5 rounded">
+                                                            Original
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm font-medium text-gray-900 break-all">
+                                                        {candidate.merchantOriginal}
+                                                    </span>
+                                                </button>
+                                            </div>
+
+                                            {/* Editable Input */}
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">
+                                                    Edit merchant name (optional):
+                                                </label>
+                                                <input
+                                                    {...register('merchant')}
+                                                    type="text"
+                                                    disabled={candidate.status !== 'Pending'}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                    placeholder="Click a button above or type your own"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <input
+                                            {...register('merchant')}
+                                            type="text"
+                                            disabled={candidate.status !== 'Pending'}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            placeholder="e.g., Amazon, Walmart"
+                                        />
+                                    )}
+
                                     {errors.merchant && (
                                         <p className="mt-1 text-sm text-red-600">{errors.merchant.message}</p>
                                     )}
