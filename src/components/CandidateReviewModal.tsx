@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Building2, CreditCard, Hash, TrendingUp } from 'lucide-react';
+import { X, Check, XCircle, Mail, Calendar, DollarSign, Store, Building2, CreditCard, Hash, TrendingUp, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -137,6 +137,27 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                 </div>
                             </div>
 
+                            {/* Security Warning for Low Confidence */}
+                            {candidate.confidence < 0.5 && (
+                                <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                    <div className="flex items-start">
+                                        <AlertCircle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-yellow-800">Review Carefully</h4>
+                                            <p className="text-sm text-yellow-700 mt-1">
+                                                This extraction has low confidence ({(candidate.confidence * 100).toFixed(0)}%).
+                                                Please verify all fields before confirming.
+                                            </p>
+                                            {candidate.confidence < 0.3 && (
+                                                <p className="text-sm text-yellow-700 mt-2 font-medium">
+                                                    ⚠️ Very low confidence detected. This may indicate suspicious patterns or a prompt injection attempt.
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="mt-6">
                                 <ConfidenceMeter confidence={candidate.confidence} />
                             </div>
@@ -215,8 +236,8 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                                     onClick={() => setValue('merchant', candidate.merchant, { shouldDirty: true })}
                                                     disabled={candidate.status !== 'Pending'}
                                                     className={`flex flex-col items-start p-3 border-2 rounded-lg transition-colors text-left ${candidate.status !== 'Pending'
-                                                            ? 'opacity-60 cursor-not-allowed border-gray-200'
-                                                            : 'border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 cursor-pointer'
+                                                        ? 'opacity-60 cursor-not-allowed border-gray-200'
+                                                        : 'border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 cursor-pointer'
                                                         }`}
                                                 >
                                                     <div className="flex items-center justify-between w-full mb-1">
@@ -235,8 +256,8 @@ export default function CandidateReviewModal({ candidate, onClose }: CandidateRe
                                                     onClick={() => setValue('merchant', candidate.merchantOriginal || '', { shouldDirty: true })}
                                                     disabled={candidate.status !== 'Pending'}
                                                     className={`flex flex-col items-start p-3 border-2 rounded-lg transition-colors text-left ${candidate.status !== 'Pending'
-                                                            ? 'opacity-60 cursor-not-allowed border-gray-200'
-                                                            : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 cursor-pointer'
+                                                        ? 'opacity-60 cursor-not-allowed border-gray-200'
+                                                        : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 cursor-pointer'
                                                         }`}
                                                 >
                                                     <div className="flex items-center justify-between w-full mb-1">
