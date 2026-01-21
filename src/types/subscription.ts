@@ -22,7 +22,8 @@ export interface SubscriptionPlan {
   name: string;
   description: string;
   monthlyPrice: number;
-  monthlyEmailLimit: number;
+  classificationLimit: number;
+  extractionLimit: number;
   maxEmailAccounts: number;
   maxApiKeys: number;
   historyRetentionDays: number;
@@ -40,14 +41,17 @@ export interface UserSubscription {
   startDate: string;
   endDate: string | null;
   status: SubscriptionStatus;
-  emailsProcessedThisMonth: number;
+  emailsClassifiedThisMonth: number;
+  emailsExtractedThisMonth: number;
   currentPeriodStart: string;
   currentPeriodEnd: string;
 }
 
 export interface SubscriptionUsage {
-  emailsProcessed: number;
-  emailLimit: number;
+  emailsClassified: number;
+  emailsExtracted: number;
+  classificationLimit: number;
+  extractionLimit: number;
   emailAccountsConnected: number;
   emailAccountsLimit: number;
   apiKeysCreated: number;

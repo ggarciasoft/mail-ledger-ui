@@ -28,7 +28,8 @@ export default function ProcessingPage() {
     const isAnyMutationPending = classifyMutation.isPending || extractMutation.isPending;
 
     // Check if email limit is reached
-    const emailLimitReached = usage ? usage.emailsProcessed >= usage.emailLimit : false;
+    const classificationLimitReached = usage ? usage.emailsClassified >= usage.classificationLimit : false;
+    const extractionLimitReached = usage ? usage.emailsExtracted >= usage.extractionLimit : false;
 
     const handleTriggerClassification = async () => {
         // Clear previous messages
@@ -209,28 +210,50 @@ export default function ProcessingPage() {
                     <div className="relative group">
                         <button
                             onClick={handleTriggerClassification}
-                            disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading || emailLimitReached}
-                            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading || classificationLimitReached}
+                            className="flex flex-col items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <Zap className="w-5 h-5 mr-2" />
-                            {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
+                            <div className="flex items-center">
+                                <Zap className="w-5 h-5 mr-2" />
+                                {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
+                            </div>
+                            {usage && (
+                                <span className="text-xs mt-1 opacity-90">
+                                    {usage.emailsClassified}/{usage.classificationLimit} used this month
+                                </span>
+                            )}
                         </button>
-                        {emailLimitReached && (
+                        {classificationLimitReached && (
                             <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                Monthly email limit reached. Please upgrade your subscription.
+                                Monthly classification limit reached. Please upgrade your subscription.
                                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                             </div>
                         )}
                     </div>
 
-                    <button
-                        onClick={handleTriggerExtraction}
-                        disabled={!status?.canExtract || isAnyMutationPending || hasRunningJobs || isLoading}
-                        className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <FileCheck className="w-5 h-5 mr-2" />
-                        {extractMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Extraction'}
-                    </button>
+                    <div className="relative group">
+                        <button
+                            onClick={handleTriggerExtraction}
+                            disabled={!status?.canExtract || isAnyMutationPending || hasRunningJobs || isLoading || extractionLimitReached}
+                            className="flex flex-col items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <div className="flex items-center">
+                                <FileCheck className="w-5 h-5 mr-2" />
+                                {extractMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Extraction'}
+                            </div>
+                            {usage && (
+                                <span className="text-xs mt-1 opacity-90">
+                                    {usage.emailsExtracted}/{usage.extractionLimit} used this month
+                                </span>
+                            )}
+                        </button>
+                        {extractionLimitReached && (
+                            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                Monthly extraction limit reached. Please upgrade your subscription.
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
