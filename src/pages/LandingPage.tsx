@@ -329,6 +329,65 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Newsletter Section */}
+            <section className="py-20 bg-gradient-to-br from-slate-900 via-indigo-900 to-blue-900 relative overflow-hidden">
+                {/* Background decoration */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-500 rounded-full filter blur-3xl"></div>
+                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl"></div>
+                </div>
+
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-8">
+                        <Mail className="w-16 h-16 text-indigo-400 mx-auto mb-4" />
+                        <h2 className="text-4xl font-bold text-white mb-4">
+                            Stay Updated with MailLedger
+                        </h2>
+                        <p className="text-xl text-indigo-200 max-w-2xl mx-auto">
+                            Get the latest updates, tips, and exclusive features delivered to your inbox.
+                            Join our newsletter and never miss an update.
+                        </p>
+                    </div>
+
+                    <form className="max-w-xl mx-auto">
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <input
+                                type="email"
+                                placeholder="Enter your email address"
+                                className="flex-1 px-6 py-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                className="group bg-white text-indigo-900 px-8 py-4 rounded-lg hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl font-semibold flex items-center justify-center space-x-2"
+                            >
+                                <span>Subscribe</span>
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
+                        <p className="text-indigo-300 text-sm mt-4 text-center">
+                            We respect your privacy. Unsubscribe at any time.
+                        </p>
+                    </form>
+
+                    {/* Social proof */}
+                    <div className="mt-12 flex items-center justify-center space-x-8 text-indigo-200">
+                        <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                            <span className="text-sm">No spam, ever</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                            <span className="text-sm">Weekly updates</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                            <span className="text-sm">Exclusive tips</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* PublicFooter */}
             <PublicFooter />
         </div>

@@ -10,26 +10,32 @@ export const useProcessingStatus = (refetchInterval?: number | false) => {
   });
 };
 
-export const useTriggerClassification = () => {
+export function useTriggerClassification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: TriggerClassificationRequest) => processingApi.triggerClassification(data),
+    mutationFn: (request: TriggerClassificationRequest) =>
+      processingApi.triggerClassification(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['processing', 'status'] });
-      queryClient.invalidateQueries({ queryKey: ['emails'] });
+      // Invalidate processing status and subscription usage to reflect updated counts
+      queryClient.invalidateQueries({ queryKey: ['processing-status'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-usage'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
     },
   });
 };
 
-export const useTriggerExtraction = () => {
+export function useTriggerExtraction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: TriggerExtractionRequest) => processingApi.triggerExtraction(data),
+    mutationFn: (request: TriggerExtractionRequest) =>
+      processingApi.triggerExtraction(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['processing', 'status'] });
-      queryClient.invalidateQueries({ queryKey: ['extraction-candidates'] });
+      // Invalidate processing status and subscription usage to reflect updated counts
+      queryClient.invalidateQueries({ queryKey: ['processing-status'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-usage'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'active'] });
     },
   });
 };

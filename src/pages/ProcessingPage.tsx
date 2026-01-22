@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } from '../hooks/use-processing';
 import { useSubscriptionUsage } from '../hooks/use-subscription';
 import { useJob, useActiveJobs } from '../hooks/use-jobs';
+import { useQueryClient } from '@tanstack/react-query';
 import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import JobStatusBadge from '../components/JobStatusBadge';
 import JobProgressBar from '../components/JobProgressBar';
@@ -13,6 +14,7 @@ export default function ProcessingPage() {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+    const queryClient = useQueryClient();
     const { data: status, isLoading, error, refetch } = useProcessingStatus();
     const { data: usage } = useSubscriptionUsage();
     const classifyMutation = useTriggerClassification();
@@ -22,6 +24,19 @@ export default function ProcessingPage() {
     // Track current jobs
     const { data: classifyJob } = useJob(classifyJobId);
     const { data: extractJob } = useJob(extractJobId);
+
+    // Refetch subscription usage when jobs complete
+    useEffect(() => {
+        if (classifyJob && classifyJob.status === 'Completed') {
+            queryClient.invalidateQueries({ queryKey: ['subscription-usage'] });
+        }
+    }, [classifyJob, queryClient]);
+
+    useEffect(() => {
+        if (extractJob && extractJob.status === 'Completed') {
+            queryClient.invalidateQueries({ queryKey: ['subscription-usage'] });
+        }
+    }, [extractJob, queryClient]);
 
     // Check if any jobs are currently running or mutations are pending
     const hasRunningJobs = activeJobs && activeJobs.length > 0;

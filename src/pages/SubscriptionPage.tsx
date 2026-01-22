@@ -83,17 +83,21 @@ export function SubscriptionPage() {
                     </div>
                 </div>
 
-                {/* Usage Statistics */}
                 <div className="space-y-4 mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-blue-600" />
                         Usage This Month
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <UsageProgress
-                            label="Emails Processed"
-                            current={usage.emailsProcessed}
-                            limit={usage.emailLimit}
+                            label="Classifications"
+                            current={usage.emailsClassified}
+                            limit={usage.classificationLimit}
+                        />
+                        <UsageProgress
+                            label="Extractions"
+                            current={usage.emailsExtracted}
+                            limit={usage.extractionLimit}
                         />
                         <UsageProgress
                             label="Email Accounts"
@@ -144,7 +148,7 @@ export function SubscriptionPage() {
                         return (
                             <div
                                 key={plan.id}
-                                className={`bg-white rounded-lg shadow-md border-2 p-6 ${isCurrentPlan
+                                className={`bg-white rounded-lg shadow-md border-2 p-6 flex flex-col ${isCurrentPlan
                                     ? 'border-blue-500 ring-2 ring-blue-200'
                                     : 'border-gray-200 hover:border-blue-300'
                                     } transition-all`}
@@ -162,10 +166,19 @@ export function SubscriptionPage() {
                                     <li className="flex items-start gap-2 text-sm">
                                         <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                                         <span>
-                                            {plan.monthlyEmailLimit === Number.MAX_SAFE_INTEGER
+                                            {plan.classificationLimit === Number.MAX_SAFE_INTEGER
                                                 ? 'Unlimited'
-                                                : plan.monthlyEmailLimit.toLocaleString()}{' '}
-                                            emails/month
+                                                : plan.classificationLimit.toLocaleString()}{' '}
+                                            classifications/month
+                                        </span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm">
+                                        <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                        <span>
+                                            {plan.extractionLimit === Number.MAX_SAFE_INTEGER
+                                                ? 'Unlimited'
+                                                : plan.extractionLimit.toLocaleString()}{' '}
+                                            extractions/month
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2 text-sm">
@@ -227,33 +240,56 @@ export function SubscriptionPage() {
                                     </li>
                                 </ul>
 
-                                {isCurrentPlan ? (
-                                    <button
-                                        disabled
-                                        className="w-full py-2 px-4 bg-gray-100 text-gray-500 rounded-lg font-medium cursor-not-allowed"
-                                    >
-                                        Current Plan
-                                    </button>
-                                ) : isUpgrade ? (
-                                    <button
-                                        onClick={() => handleUpgrade(plan.id)}
-                                        disabled={upgradeMutation.isPending}
-                                        className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        Upgrade
-                                        <ArrowRight className="h-4 w-4" />
-                                    </button>
-                                ) : (
-                                    <button
-                                        disabled
-                                        className="w-full py-2 px-4 bg-gray-100 text-gray-500 rounded-lg font-medium cursor-not-allowed"
-                                    >
-                                        Downgrade Not Available
-                                    </button>
-                                )}
+                                {/* Separator */}
+                                <div className="border-t border-gray-200 my-4"></div>
+
+                                {/* Button - will be pushed to bottom by flex */}
+                                <div className="mt-auto">
+
+                                    {isCurrentPlan ? (
+                                        <button
+                                            disabled
+                                            className="w-full py-2 px-4 bg-gray-100 text-gray-500 rounded-lg font-medium cursor-not-allowed"
+                                        >
+                                            Current Plan
+                                        </button>
+                                    ) : isUpgrade ? (
+                                        <button
+                                            onClick={() => handleUpgrade(plan.id)}
+                                            disabled={upgradeMutation.isPending}
+                                            className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        >
+                                            Upgrade
+                                            <ArrowRight className="h-4 w-4" />
+                                        </button>
+                                    ) : (
+                                        <button
+                                            disabled
+                                            className="w-full py-2 px-4 bg-gray-100 text-gray-500 rounded-lg font-medium cursor-not-allowed"
+                                        >
+                                            Downgrade Not Available
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         );
                     })}
+
+                    {/* Coming Soon Card */}
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-md border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center text-center">
+                        <div className="mb-4">
+                            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <ArrowRight className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-700 mb-2">More Plans Coming Soon</h3>
+                            <p className="text-sm text-gray-600">
+                                We're working on additional subscription tiers to better fit your needs.
+                            </p>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-auto">
+                            Stay tuned for updates!
+                        </div>
+                    </div>
                 </div>
             </div>
 
