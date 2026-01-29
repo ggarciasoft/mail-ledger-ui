@@ -19,6 +19,7 @@ import ProcessingPage from './pages/ProcessingPage';
 import JobsPage from './pages/JobsPage';
 import RulesPage from './pages/RulesPage';
 import SettingsPage from './pages/SettingsPage';
+import IntegrationsPage from './pages/IntegrationsPage';
 import { WorkflowPage } from './pages/WorkflowPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
@@ -73,6 +74,7 @@ function AppContent() {
             <Route path="/workflow" element={<WorkflowPage />} />
             <Route path="/subscription" element={<SubscriptionPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/integrations" element={<IntegrationsPage />} />
           </Route>
         </Route>
 

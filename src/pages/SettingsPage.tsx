@@ -1,7 +1,5 @@
 import { Settings as SettingsIcon } from 'lucide-react';
 import ProfileSection from '../components/ProfileSection';
-import ApiKeysSection from '../components/ApiKeysSection';
-import { EmailConnectionsSection } from '../components/EmailConnectionsSection';
 import NotificationPreferencesSection from '../components/NotificationPreferencesSection';
 
 export default function SettingsPage() {
@@ -13,15 +11,13 @@ export default function SettingsPage() {
                     <SettingsIcon className="w-8 h-8 mr-3" />
                     Settings
                 </h1>
-                <p className="text-gray-600">Manage your profile, API keys, and email integrations</p>
+                <p className="text-gray-600">Manage your profile and preferences</p>
             </div>
 
             {/* Settings Sections */}
             <div className="space-y-6">
                 <ProfileSection />
                 <NotificationPreferencesSection />
-                <ApiKeysSection />
-                <EmailConnectionsSection />
             </div>
         </div>
     );
