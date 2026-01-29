@@ -3,9 +3,7 @@ import { useProcessingStatus, useTriggerClassification, useTriggerExtraction } f
 import { useSubscriptionUsage } from '../hooks/use-subscription';
 import { useJob, useActiveJobs } from '../hooks/use-jobs';
 import { useQueryClient } from '@tanstack/react-query';
-import { Play, AlertCircle, Zap, FileCheck, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import JobStatusBadge from '../components/JobStatusBadge';
-import JobProgressBar from '../components/JobProgressBar';
+import { Play, AlertCircle, Zap, FileCheck, CheckCircle2 } from 'lucide-react';
 
 export default function ProcessingPage() {
     const [batchSize, setBatchSize] = useState(50);
@@ -127,11 +125,11 @@ export default function ProcessingPage() {
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Processing Management</h1>
-                <p className="text-gray-600">Trigger batch AI processing jobs for email classification and data extraction</p>
+            <div className="mb-6 lg:mb-8 pt-12 lg:pt-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Processing Management</h1>
+                <p className="text-sm sm:text-base text-gray-600">Trigger batch AI processing jobs for email classification and data extraction</p>
             </div>
 
             {/* Success Message */}
@@ -221,16 +219,18 @@ export default function ProcessingPage() {
                     </p>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative group">
                         <button
                             onClick={handleTriggerClassification}
                             disabled={!status?.canClassify || isAnyMutationPending || hasRunningJobs || isLoading || classificationLimitReached}
-                            className="flex flex-col items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex flex-col items-center justify-center px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                         >
                             <div className="flex items-center">
                                 <Zap className="w-5 h-5 mr-2" />
-                                {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
+                                <span className="text-sm sm:text-base">
+                                    {classifyMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Classification'}
+                                </span>
                             </div>
                             {usage && (
                                 <span className="text-xs mt-1 opacity-90">
@@ -250,11 +250,13 @@ export default function ProcessingPage() {
                         <button
                             onClick={handleTriggerExtraction}
                             disabled={!status?.canExtract || isAnyMutationPending || hasRunningJobs || isLoading || extractionLimitReached}
-                            className="flex flex-col items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex flex-col items-center justify-center px-4 sm:px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                         >
                             <div className="flex items-center">
                                 <FileCheck className="w-5 h-5 mr-2" />
-                                {extractMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Extraction'}
+                                <span className="text-sm sm:text-base">
+                                    {extractMutation.isPending ? 'Processing...' : hasRunningJobs ? 'Job Running...' : 'Trigger Extraction'}
+                                </span>
                             </div>
                             {usage && (
                                 <span className="text-xs mt-1 opacity-90">
@@ -283,29 +285,37 @@ export default function ProcessingPage() {
                     {/* Last Classification Job */}
                     {status?.lastClassificationJob && (
                         <div className="bg-white rounded-lg border border-gray-200 p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Last Classification Job</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-600">Processed</p>
-                                    <p className="text-2xl font-semibold text-gray-900">{status.lastClassificationJob.processed}</p>
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Last Classification Job</h3>
+                                <span className="text-xs text-gray-500">
+                                    {formatDate(status.lastClassificationJob.startedAt)}
+                                </span>
+                            </div>
+
+                            {/* Statistics Rows */}
+                            <div className="space-y-3">
+                                {/* Progress Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Progress:</span>
+                                    <span className="text-base font-semibold text-gray-900">
+                                        {status.lastClassificationJob.processed} / {status.lastClassificationJob.processed} items
+                                    </span>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Succeeded</p>
-                                    <p className="text-2xl font-semibold text-green-600 flex items-center">
-                                        {status.lastClassificationJob.succeeded}
-                                        <CheckCircle2 className="w-5 h-5 ml-1" />
-                                    </p>
+
+                                {/* Success Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Success:</span>
+                                    <span className="text-base font-semibold text-green-600 flex items-center gap-1">
+                                        {status.lastClassificationJob.succeeded} success
+                                    </span>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Failed</p>
-                                    <p className="text-2xl font-semibold text-red-600 flex items-center">
-                                        {status.lastClassificationJob.failed}
-                                        <XCircle className="w-5 h-5 ml-1" />
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Started</p>
-                                    <p className="text-sm font-medium text-gray-900">{formatDate(status.lastClassificationJob.startedAt)}</p>
+
+                                {/* Failed Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Failed:</span>
+                                    <span className="text-base font-semibold text-red-600 flex items-center gap-1">
+                                        {status.lastClassificationJob.failed} failed
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -314,29 +324,37 @@ export default function ProcessingPage() {
                     {/* Last Extraction Job */}
                     {status?.lastExtractionJob && (
                         <div className="bg-white rounded-lg border border-gray-200 p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Last Extraction Job</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div>
-                                    <p className="text-sm text-gray-600">Processed</p>
-                                    <p className="text-2xl font-semibold text-gray-900">{status.lastExtractionJob.processed}</p>
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Last Extraction Job</h3>
+                                <span className="text-xs text-gray-500">
+                                    {formatDate(status.lastExtractionJob.startedAt)}
+                                </span>
+                            </div>
+
+                            {/* Statistics Rows */}
+                            <div className="space-y-3">
+                                {/* Progress Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Progress:</span>
+                                    <span className="text-base font-semibold text-gray-900">
+                                        {status.lastExtractionJob.processed} / {status.lastExtractionJob.processed} items
+                                    </span>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Succeeded</p>
-                                    <p className="text-2xl font-semibold text-green-600 flex items-center">
-                                        {status.lastExtractionJob.succeeded}
-                                        <CheckCircle2 className="w-5 h-5 ml-1" />
-                                    </p>
+
+                                {/* Success Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Success:</span>
+                                    <span className="text-base font-semibold text-green-600 flex items-center gap-1">
+                                        {status.lastExtractionJob.succeeded} success
+                                    </span>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Failed</p>
-                                    <p className="text-2xl font-semibold text-red-600 flex items-center">
-                                        {status.lastExtractionJob.failed}
-                                        <XCircle className="w-5 h-5 ml-1" />
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-600">Started</p>
-                                    <p className="text-sm font-medium text-gray-900">{formatDate(status.lastExtractionJob.startedAt)}</p>
+
+                                {/* Failed Row */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Failed:</span>
+                                    <span className="text-base font-semibold text-red-600 flex items-center gap-1">
+                                        {status.lastExtractionJob.failed} failed
+                                    </span>
                                 </div>
                             </div>
                         </div>

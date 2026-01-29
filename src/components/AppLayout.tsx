@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter, ListChecks, Workflow, CreditCard, Link as LinkIcon } from 'lucide-react';
+import { Home, Mail, FileCheck, DollarSign, Settings, Play, LogOut, Filter, ListChecks, Workflow, CreditCard, Link as LinkIcon, Menu, X } from 'lucide-react';
 import { useLogout } from '../hooks/use-auth';
 import { useAuthStore } from '../store/auth-store';
 import ActiveJobsPanel from './ActiveJobsPanel';
@@ -8,6 +9,7 @@ export default function AppLayout() {
     const location = useLocation();
     const logout = useLogout();
     const user = useAuthStore((state) => state.user);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -31,10 +33,35 @@ export default function AppLayout() {
         logout();
     };
 
+    const closeMobileMenu = () => {
+        setMobileMenuOpen(false);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex">
+            {/* Mobile menu button */}
+            <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg text-gray-700 hover:bg-gray-100"
+            >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+
+            {/* Mobile overlay */}
+            {mobileMenuOpen && (
+                <div
+                    className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+                    onClick={closeMobileMenu}
+                />
+            )}
+
             {/* Sidebar */}
-            <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div className={`
+                fixed lg:static inset-y-0 left-0 z-40
+                w-64 bg-white border-r border-gray-200 flex flex-col
+                transform transition-transform duration-300 ease-in-out
+                ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
                 {/* Logo */}
                 <div className="p-6 border-b border-gray-200">
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -44,7 +71,7 @@ export default function AppLayout() {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {navigation.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
@@ -53,13 +80,14 @@ export default function AppLayout() {
                             <Link
                                 key={item.name}
                                 to={item.href}
+                                onClick={closeMobileMenu}
                                 className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${active
                                     ? 'bg-blue-50 text-blue-700'
                                     : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
-                                <Icon className={`w-5 h-5 mr-3 ${active ? 'text-blue-700' : 'text-gray-500'}`} />
-                                {item.name}
+                                <Icon className={`w-5 h-5 mr-3 flex-shrink-0 ${active ? 'text-blue-700' : 'text-gray-500'}`} />
+                                <span className="truncate">{item.name}</span>
                             </Link>
                         );
                     })}
@@ -68,7 +96,7 @@ export default function AppLayout() {
                 {/* User Section */}
                 <div className="p-4 border-t border-gray-200">
                     <div className="flex items-center mb-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
                             {user?.firstName?.[0]}{user?.lastName?.[0]}
                         </div>
                         <div className="ml-3 flex-1 min-w-0">
@@ -90,12 +118,14 @@ export default function AppLayout() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto lg:ml-0">
                 <Outlet />
             </div>
 
-            {/* Active Jobs Panel */}
-            <ActiveJobsPanel />
+            {/* Active Jobs Panel - Hidden on mobile */}
+            <div className="hidden xl:block">
+                <ActiveJobsPanel />
+            </div>
         </div>
     );
 }

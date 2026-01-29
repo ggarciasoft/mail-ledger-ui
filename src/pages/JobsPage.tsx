@@ -70,11 +70,11 @@ export default function JobsPage() {
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Background Jobs</h1>
-                <p className="text-gray-600">View and manage all background processing jobs</p>
+            <div className="mb-6 lg:mb-8 pt-12 lg:pt-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Background Jobs</h1>
+                <p className="text-sm sm:text-base text-gray-600">View and manage all background processing jobs</p>
             </div>
 
             {/* Jobs List */}
@@ -119,9 +119,9 @@ export default function JobsPage() {
                                         </div>
 
                                         {/* Job Stats */}
-                                        <div className="flex items-center gap-6 text-sm mb-3">
+                                        <div className="space-y-2 text-sm mb-3">
                                             {job.totalItems > 0 && (
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-between">
                                                     <span className="text-gray-600">Progress:</span>
                                                     <span className="font-medium text-gray-900">
                                                         {job.processedItems} / {job.totalItems} items
@@ -129,15 +129,21 @@ export default function JobsPage() {
                                                 </div>
                                             )}
                                             {job.successCount > 0 && (
-                                                <div className="flex items-center gap-1 text-green-600">
-                                                    <CheckCircle className="w-4 h-4" />
-                                                    <span className="font-medium">{job.successCount} success</span>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-gray-600">Success:</span>
+                                                    <span className="font-medium text-green-600 flex items-center gap-1">
+                                                        <CheckCircle className="w-4 h-4" />
+                                                        {job.successCount} success
+                                                    </span>
                                                 </div>
                                             )}
                                             {job.failureCount > 0 && (
-                                                <div className="flex items-center gap-1 text-red-600">
-                                                    <XIcon className="w-4 h-4" />
-                                                    <span className="font-medium">{job.failureCount} failed</span>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-gray-600">Failed:</span>
+                                                    <span className="font-medium text-red-600 flex items-center gap-1">
+                                                        <XIcon className="w-4 h-4" />
+                                                        {job.failureCount} failed
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
