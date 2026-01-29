@@ -5,6 +5,8 @@ export type EmailStatus = 'Pending' | 'Classified' | 'Extracted' | 'Failed';
 export interface Email {
   id: string;
   messageId: string;
+  threadId: string;
+  provider: 'Gmail' | 'Outlook';
   subject: string;
   from: string;
   receivedAt: string;

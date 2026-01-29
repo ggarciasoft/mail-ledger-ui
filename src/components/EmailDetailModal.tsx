@@ -20,7 +20,13 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
         }).format(new Date(dateString)) : '';
     };
 
+    const isGmail = email.provider === 'Gmail';
+    const isOutlook = email.provider === 'Outlook';
+
     const gmailUrl = `${import.meta.env.VITE_GMAIL_INBOX_URL}#inbox/${email.messageId}`;
+    const outlookUrl = `${import.meta.env.VITE_OUTLOOK_INBOX_URL}${encodeURIComponent(email.threadId)}`;
+    const externalUrl = isGmail ? gmailUrl : outlookUrl;
+    const externalLabel = isGmail ? 'View in Gmail' : 'View in Outlook';
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -38,9 +44,15 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
 
                 {/* Content */}
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-                    {/* Status */}
-                    <div className="mb-6">
+                    {/* Status and Provider */}
+                    <div className="mb-6 flex items-center gap-3">
                         <StatusBadge status={email.processingStatus} />
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isGmail
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-blue-100 text-blue-800'
+                            }`}>
+                            {email.provider}
+                        </span>
                     </div>
 
                     {/* Subject */}
@@ -69,7 +81,7 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                         <div className="flex items-start">
                             <Mail className="w-5 h-5 text-gray-400 mr-3 mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium text-gray-500">Gmail Message ID</p>
+                                <p className="text-sm font-medium text-gray-500">Message ID</p>
                                 <p className="text-sm text-gray-900 font-mono break-all">{email.messageId}</p>
                             </div>
                         </div>
@@ -130,13 +142,16 @@ export default function EmailDetailModal({ email, onClose }: EmailDetailModalPro
                 {/* Footer */}
                 <div className="bg-gray-50 px-6 py-4 flex justify-between border-t border-gray-200">
                     <a
-                        href={gmailUrl}
+                        href={externalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium text-white ${isGmail
+                            ? 'bg-red-600 hover:bg-red-700'
+                            : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
                     >
                         <ExternalLink className="w-4 h-4" />
-                        View in Gmail
+                        {externalLabel}
                     </a>
                     <button
                         onClick={onClose}
