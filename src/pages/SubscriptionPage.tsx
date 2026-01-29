@@ -109,6 +109,11 @@ export function SubscriptionPage() {
                             current={usage.apiKeysCreated}
                             limit={usage.apiKeysLimit}
                         />
+                        <UsageProgress
+                            label="Webhooks"
+                            current={usage.webhooksCreated}
+                            limit={usage.webhooksLimit}
+                        />
                     </div>
                 </div>
 
@@ -235,6 +240,24 @@ export function SubscriptionPage() {
                                             <>
                                                 <X className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                                                 <span className="text-gray-500">No export</span>
+                                            </>
+                                        )}
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm">
+                                        {plan.canUseWebhooks && plan.maxWebhooks > 0 ? (
+                                            <>
+                                                <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                                <span>
+                                                    {plan.maxWebhooks === Number.MAX_SAFE_INTEGER
+                                                        ? 'Unlimited'
+                                                        : plan.maxWebhooks}{' '}
+                                                    webhook{plan.maxWebhooks !== 1 ? 's' : ''}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <X className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                                                <span className="text-gray-500">No webhooks</span>
                                             </>
                                         )}
                                     </li>

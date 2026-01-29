@@ -56,6 +56,8 @@ export interface SubscriptionUsage {
   emailAccountsLimit: number;
   apiKeysCreated: number;
   apiKeysLimit: number;
+  webhooksCreated: number;
+  webhooksLimit: number;
 }
 
 export interface UpgradeSubscriptionRequest {
