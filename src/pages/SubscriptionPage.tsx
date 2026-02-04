@@ -171,7 +171,7 @@ export function SubscriptionPage() {
                                     <li className="flex items-start gap-2 text-sm">
                                         <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                                         <span>
-                                            {plan.classificationLimit === Number.MAX_SAFE_INTEGER
+                                            {plan.classificationLimit === -1 || plan.classificationLimit === Number.MAX_SAFE_INTEGER
                                                 ? 'Unlimited'
                                                 : plan.classificationLimit.toLocaleString()}{' '}
                                             classifications/month
@@ -180,7 +180,7 @@ export function SubscriptionPage() {
                                     <li className="flex items-start gap-2 text-sm">
                                         <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                                         <span>
-                                            {plan.extractionLimit === Number.MAX_SAFE_INTEGER
+                                            {plan.extractionLimit === -1 || plan.extractionLimit === Number.MAX_SAFE_INTEGER
                                                 ? 'Unlimited'
                                                 : plan.extractionLimit.toLocaleString()}{' '}
                                             extractions/month
@@ -191,7 +191,7 @@ export function SubscriptionPage() {
                                             <>
                                                 <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
                                                 <span>
-                                                    {plan.maxEmailAccounts === Number.MAX_SAFE_INTEGER
+                                                    {plan.maxEmailAccounts === -1 || plan.maxEmailAccounts === Number.MAX_SAFE_INTEGER
                                                         ? 'Unlimited'
                                                         : plan.maxEmailAccounts}{' '}
                                                     email account{plan.maxEmailAccounts !== 1 ? 's' : ''}
@@ -248,7 +248,7 @@ export function SubscriptionPage() {
                                             <>
                                                 <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                                                 <span>
-                                                    {plan.maxWebhooks === Number.MAX_SAFE_INTEGER
+                                                    {plan.maxWebhooks === -1 || plan.maxWebhooks === Number.MAX_SAFE_INTEGER
                                                         ? 'Unlimited'
                                                         : plan.maxWebhooks}{' '}
                                                     webhook{plan.maxWebhooks !== 1 ? 's' : ''}

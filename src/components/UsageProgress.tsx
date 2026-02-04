@@ -11,11 +11,11 @@ export function UsageProgress({
     limit,
     className = '',
 }: UsageProgressProps) {
-    const percentage = limit === Number.MAX_SAFE_INTEGER
+    const isUnlimited = limit === -1 || limit === Number.MAX_SAFE_INTEGER;
+
+    const percentage = isUnlimited
         ? 0
         : Math.min((current / limit) * 100, 100);
-
-    const isUnlimited = limit === Number.MAX_SAFE_INTEGER;
     const isNearLimit = percentage >= 80;
     const isAtLimit = percentage >= 100;
 
