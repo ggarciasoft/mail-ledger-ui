@@ -135,7 +135,7 @@ export function SubscriptionPage() {
                 {subscription.status === 'Active' && currentPlan.name !== SubscriptionTier.Free && (
                     <button
                         onClick={() => setShowCancelDialog(true)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
                     >
                         Cancel Subscription
                     </button>
