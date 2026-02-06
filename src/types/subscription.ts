@@ -67,3 +67,11 @@ export interface UpgradeSubscriptionRequest {
 export interface CancelSubscriptionRequest {
   reason: string;
 }
+
+export interface CreateCheckoutSessionRequest {
+  planId: string;
+}
+
+export interface CreateCheckoutSessionResponse {
+  checkoutUrl: string;
+}

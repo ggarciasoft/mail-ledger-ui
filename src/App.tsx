@@ -31,6 +31,8 @@ import FeaturesPage from './pages/FeaturesPage';
 import ApiPage from './pages/ApiPage';
 import PricingPage from './pages/PricingPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
+import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
+import { CheckoutCancelPage } from './pages/CheckoutCancelPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -59,6 +61,8 @@ function AppContent() {
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/api" element={<ApiPage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
 
 
         {/* Protected routes */}

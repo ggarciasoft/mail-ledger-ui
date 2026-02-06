@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, X, ArrowRight, TrendingUp, AlertCircle } from 'lucide-react';
-import { useMySubscription, useSubscriptionUsage, useSubscriptionPlans, useUpgradeSubscription, useCancelSubscription } from '../hooks/use-subscription';
+import { useMySubscription, useSubscriptionUsage, useSubscriptionPlans, useCancelSubscription } from '../hooks/use-subscription';
+import { useCreateCheckoutSession } from '../hooks/use-stripe';
 import { SubscriptionBadge } from '../components/SubscriptionBadge';
 import { UsageProgress } from '../components/UsageProgress';
 import { SubscriptionTier } from '../types/subscription';
@@ -9,16 +10,15 @@ export function SubscriptionPage() {
     const { data: subscription, isLoading: subscriptionLoading } = useMySubscription();
     const { data: usage, isLoading: usageLoading } = useSubscriptionUsage();
     const { data: plans, isLoading: plansLoading } = useSubscriptionPlans();
-    const upgradeMutation = useUpgradeSubscription();
+    const checkoutMutation = useCreateCheckoutSession();
     const cancelMutation = useCancelSubscription();
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [cancelReason, setCancelReason] = useState('');
 
     const handleUpgrade = (planId: string) => {
-        if (confirm('Are you sure you want to upgrade your subscription?')) {
-            upgradeMutation.mutate({ planId });
-        }
+        // Redirect to Stripe Checkout
+        checkoutMutation.mutate({ planId });
     };
 
     const handleCancel = () => {
@@ -279,7 +279,7 @@ export function SubscriptionPage() {
                                     ) : isUpgrade ? (
                                         <button
                                             onClick={() => handleUpgrade(plan.id)}
-                                            disabled={upgradeMutation.isPending}
+                                            disabled={checkoutMutation.isPending}
                                             className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             Upgrade
