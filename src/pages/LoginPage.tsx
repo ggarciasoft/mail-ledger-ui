@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLogin } from '../hooks/use-auth';
 import { useNavigate, Link } from 'react-router-dom';
+import { SSOButtons } from '../components/SSOButtons';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -54,6 +55,9 @@ export default function LoginPage() {
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
                     <p className="text-gray-600">Sign in to your MailLedger account</p>
                 </div>
+
+                {/* SSO Buttons */}
+                <SSOButtons />
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {errorMessage && (

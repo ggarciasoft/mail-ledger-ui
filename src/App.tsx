@@ -33,6 +33,8 @@ import PricingPage from './pages/PricingPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
 import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutCancelPage } from './pages/CheckoutCancelPage';
+import GoogleCallbackPage from './pages/GoogleCallbackPage';
+import MicrosoftCallbackPage from './pages/MicrosoftCallbackPage';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -63,6 +65,10 @@ function AppContent() {
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
+
+        {/* OAuth callback routes */}
+        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+        <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
 
 
         {/* Protected routes */}
