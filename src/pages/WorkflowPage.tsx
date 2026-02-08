@@ -6,6 +6,7 @@ import { Calendar, Hand, ArrowRight, Lock } from 'lucide-react';
 import { cronToHumanReadable } from '../lib/cron-utils';
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import moment from 'moment-timezone';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 // Helper function to group timezones by region
 function getGroupedTimezones() {
@@ -37,6 +38,9 @@ function getGroupedTimezones() {
 }
 
 export function WorkflowPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('workflow');
+
     const { data: config, isLoading } = useWorkflowConfiguration();
     const { data: subscription, isLoading: subscriptionLoading } = useMySubscription();
     const updateConfig = useUpdateWorkflowConfiguration();
@@ -97,7 +101,7 @@ export function WorkflowPage() {
             </p>
 
             {/* Mode Selection */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <div className="bg-white rounded-lg shadow p-6 mb-6 workflow-mode-section">
                 <h2 className="text-xl font-semibold mb-4">Workflow Mode</h2>
 
                 <div className="space-y-4">
@@ -207,7 +211,7 @@ export function WorkflowPage() {
 
             {/* Configuration based on selected mode */}
             {mode === WorkflowMode.Separate && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <div className="bg-white rounded-lg shadow p-6 mb-6 schedule-config-section">
                     <h2 className="text-xl font-semibold mb-4">Separate Schedules</h2>
                     <div className="space-y-4">
                         <ScheduleInput
@@ -230,7 +234,7 @@ export function WorkflowPage() {
             )}
 
             {mode === WorkflowMode.Sequential && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <div className="bg-white rounded-lg shadow p-6 mb-6 schedule-config-section">
                     <h2 className="text-xl font-semibold mb-4">Pipeline Schedule</h2>
                     <ScheduleInput
                         label="Pipeline Schedule"
@@ -242,7 +246,7 @@ export function WorkflowPage() {
 
             {/* Timezone Selection */}
             {mode !== WorkflowMode.Manual && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <div className="bg-white rounded-lg shadow p-6 mb-6 timezone-section">
                     <h2 className="text-xl font-semibold mb-2">Timezone</h2>
                     <p className="text-sm text-gray-600 mb-4">
                         Schedules will run in your selected timezone. Current: {moment.tz(timeZoneId).format('z')}
@@ -297,7 +301,7 @@ export function WorkflowPage() {
 
             {/* Batch Sizes */}
             {mode !== WorkflowMode.Manual && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <div className="bg-white rounded-lg shadow p-6 mb-6 batch-size-section">
                     <h2 className="text-xl font-semibold mb-4">Batch Sizes</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>

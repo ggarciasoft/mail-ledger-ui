@@ -9,8 +9,12 @@ import Pagination from '../components/Pagination';
 import BulkActionToolbar from '../components/BulkActionToolbar';
 import RejectDialog from '../components/RejectDialog';
 import type { ExtractionCandidate } from '../types/extraction-candidate';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function ExtractionCandidatesPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('extraction-candidates');
+
     const [selectedCandidate, setSelectedCandidate] = useState<ExtractionCandidate | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -139,7 +143,7 @@ export default function ExtractionCandidatesPage() {
                                 type="checkbox"
                                 checked={allPendingSelected}
                                 readOnly
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 pointer-events-none"
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 pointer-events-none bulk-select-checkbox"
                             />
                             {allPendingSelected ? 'Deselect All' : 'Select All'}
                         </button>
@@ -180,12 +184,14 @@ export default function ExtractionCandidatesPage() {
 
             {/* Bulk Action Toolbar */}
             {selectedIds.length > 0 && canUseBulkOperations && (
-                <BulkActionToolbar
-                    selectedCount={selectedIds.length}
-                    onConfirm={handleBulkConfirm}
-                    onReject={() => setShowRejectDialog(true)}
-                    onClear={() => setSelectedIds([])}
-                />
+                <div className="bulk-action-toolbar">
+                    <BulkActionToolbar
+                        selectedCount={selectedIds.length}
+                        onConfirm={handleBulkConfirm}
+                        onReject={() => setShowRejectDialog(true)}
+                        onClear={() => setSelectedIds([])}
+                    />
+                </div>
             )}
 
             {/* Candidates Grid */}
@@ -212,7 +218,7 @@ export default function ExtractionCandidatesPage() {
                             <div
                                 key={candidate.id}
                                 onClick={() => setSelectedCandidate(candidate)}
-                                className={`bg-white rounded-lg border p-6 hover:shadow-lg cursor-pointer transition-all relative ${selectedIds.includes(candidate.id)
+                                className={`bg-white rounded-lg border p-6 hover:shadow-lg cursor-pointer transition-all relative candidate-review-button ${selectedIds.includes(candidate.id)
                                     ? 'border-blue-500 ring-2 ring-blue-200'
                                     : 'border-gray-200 hover:border-blue-300'
                                     }`}
@@ -292,7 +298,9 @@ export default function ExtractionCandidatesPage() {
                                 </div>
 
                                 {/* Confidence */}
-                                <ConfidenceMeter confidence={candidate.confidence} showLabel={false} />
+                                <div className="confidence-meter">
+                                    <ConfidenceMeter confidence={candidate.confidence} showLabel={false} />
+                                </div>
                             </div>
                         ))}
                     </div>

@@ -7,8 +7,12 @@ import StatusBadge from '../components/StatusBadge';
 import EmptyState from '../components/EmptyState';
 import Pagination from '../components/Pagination';
 import type { Email } from '../types/email';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function EmailsPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('emails');
+
     const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [emailToDelete, setEmailToDelete] = useState<string | null>(null);
@@ -139,12 +143,14 @@ export default function EmailsPage() {
             </div>
 
             {/* Filters */}
-            <EmailFilters
-                status={params.status}
-                search={params.search}
-                onStatusChange={setStatus}
-                onSearchChange={setSearch}
-            />
+            <div className="email-filters">
+                <EmailFilters
+                    status={params.status}
+                    search={params.search}
+                    onStatusChange={setStatus}
+                    onSearchChange={setSearch}
+                />
+            </div>
 
             {/* Bulk Action Toolbar */}
             {selectedIds.size > 0 && (
@@ -172,7 +178,7 @@ export default function EmailsPage() {
             )}
 
             {/* Table */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden email-list">
                 {isLoading ? (
                     <div className="p-12 text-center">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -203,6 +209,9 @@ export default function EmailsPage() {
                                             />
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Financial
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Subject
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -216,9 +225,6 @@ export default function EmailsPage() {
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Has Extraction
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Financial
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Error
@@ -244,12 +250,19 @@ export default function EmailsPage() {
                                                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
                                                 />
                                             </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-500 classification-badge">
+                                                    {email.isFinancial ? '✓' : '—'}
+                                                </div>
+                                            </td>
                                             <td
                                                 className="px-6 py-4 whitespace-nowrap cursor-pointer"
                                                 onClick={() => setSelectedEmail(email)}
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <StatusBadge status={email.processingStatus} />
+                                                    <div className="status-badge">
+                                                        <StatusBadge status={email.processingStatus} />
+                                                    </div>
                                                     <div className="text-sm font-medium text-gray-900 max-w-md truncate">
                                                         {email.subject}
                                                     </div>
@@ -271,11 +284,6 @@ export default function EmailsPage() {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-500">
                                                     {email.hasExtractionCandidate ? '✓' : '—'}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500">
-                                                    {email.isFinancial ? '✓' : '—'}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -337,58 +345,62 @@ export default function EmailsPage() {
             <EmailDetailModal email={selectedEmail} onClose={() => setSelectedEmail(null)} />
 
             {/* Delete Confirmation Dialog */}
-            {emailToDelete && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg max-w-md w-full p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Email?</h3>
-                        <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete this email? This action cannot be undone.
-                        </p>
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={() => setEmailToDelete(null)}
-                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                disabled={deleteMutation.isPending}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                            >
-                                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-                            </button>
+            {
+                emailToDelete && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg max-w-md w-full p-6">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Email?</h3>
+                            <p className="text-gray-600 mb-6">
+                                Are you sure you want to delete this email? This action cannot be undone.
+                            </p>
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setEmailToDelete(null)}
+                                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    disabled={deleteMutation.isPending}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Bulk Delete Confirmation Dialog */}
-            {showBulkDeleteConfirm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg max-w-md w-full p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Delete {selectedIds.size} Emails?</h3>
-                        <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete {selectedIds.size} email{selectedIds.size !== 1 ? 's' : ''}? This action cannot be undone.
-                        </p>
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={() => setShowBulkDeleteConfirm(false)}
-                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmBulkDelete}
-                                disabled={bulkDeleteMutation.isPending}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                            >
-                                {bulkDeleteMutation.isPending ? 'Deleting...' : 'Delete'}
-                            </button>
+            {
+                showBulkDeleteConfirm && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg max-w-md w-full p-6">
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete {selectedIds.size} Emails?</h3>
+                            <p className="text-gray-600 mb-6">
+                                Are you sure you want to delete {selectedIds.size} email{selectedIds.size !== 1 ? 's' : ''}? This action cannot be undone.
+                            </p>
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setShowBulkDeleteConfirm(false)}
+                                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmBulkDelete}
+                                    disabled={bulkDeleteMutation.isPending}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {bulkDeleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

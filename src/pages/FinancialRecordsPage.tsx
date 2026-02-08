@@ -8,8 +8,12 @@ import Pagination from '../components/Pagination';
 import type { FinancialRecord } from '../types/financial-record';
 import { financialRecordApi } from '../lib/financial-record-api';
 import { FeatureGate } from '../components/FeatureGate';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function FinancialRecordsPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('financial-records');
+
     const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | null>(null);
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState<string | null>(null);
@@ -101,10 +105,12 @@ export default function FinancialRecordsPage() {
             )}
 
             {/* Filters */}
-            <RecordFilters onFiltersChange={setFilters} />
+            <div className="record-filters">
+                <RecordFilters onFiltersChange={setFilters} />
+            </div>
 
             {/* Table */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden record-list">
                 {isLoading ? (
                     <div className="p-12 text-center">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -147,7 +153,7 @@ export default function FinancialRecordsPage() {
                                         <tr
                                             key={record.id}
                                             onClick={() => setSelectedRecord(record)}
-                                            className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                            className="hover:bg-gray-50 cursor-pointer transition-colors record-detail-button"
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-900">{formatDate(record.transactionDate)}</div>

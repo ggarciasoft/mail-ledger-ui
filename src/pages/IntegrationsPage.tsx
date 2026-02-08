@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Link, Key, Webhook, Mail } from 'lucide-react';
 import ApiKeysSection from '../components/ApiKeysSection';
 import { EmailConnectionsSection } from '../components/EmailConnectionsSection';
@@ -8,6 +9,18 @@ type TabType = 'api-keys' | 'webhooks' | 'email-connections';
 
 export default function IntegrationsPage() {
     const [activeTab, setActiveTab] = useState<TabType>('api-keys');
+    const [searchParams] = useSearchParams();
+
+    // Auto-switch to email-connections tab if OAuth callback parameters are present
+    useEffect(() => {
+        const hasEmailCallback = searchParams.has('gmail_connected') ||
+            searchParams.has('email_connected') ||
+            searchParams.has('error');
+
+        if (hasEmailCallback) {
+            setActiveTab('email-connections');
+        }
+    }, [searchParams]);
 
     const tabs = [
         { id: 'api-keys' as TabType, name: 'API Keys', icon: Key },

@@ -1,8 +1,12 @@
 import { Settings as SettingsIcon } from 'lucide-react';
 import ProfileSection from '../components/ProfileSection';
 import NotificationPreferencesSection from '../components/NotificationPreferencesSection';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function SettingsPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('settings');
+
     return (
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             {/* Header */}
@@ -16,8 +20,12 @@ export default function SettingsPage() {
 
             {/* Settings Sections */}
             <div className="space-y-4 sm:space-y-6">
-                <ProfileSection />
-                <NotificationPreferencesSection />
+                <div className="profile-section">
+                    <ProfileSection />
+                </div>
+                <div className="notification-preferences-section">
+                    <NotificationPreferencesSection />
+                </div>
             </div>
         </div>
     );

@@ -35,6 +35,9 @@ import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutCancelPage } from './pages/CheckoutCancelPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import MicrosoftCallbackPage from './pages/MicrosoftCallbackPage';
+import { TutorialProvider } from './contexts/TutorialContext';
+import { TutorialWrapper } from './components/TutorialWrapper';
+import { FloatingHelpButton } from './components/FloatingHelpButton';
 
 function AppContent() {
   // Auto-login: fetch user data if authenticated
@@ -45,6 +48,8 @@ function AppContent() {
 
   return (
     <BrowserRouter>
+      <TutorialWrapper />
+      <FloatingHelpButton />
       <Routes>
         {/* Public routes - Landing page accessible to everyone */}
         <Route path="/" element={<LandingPage />} />
@@ -98,7 +103,9 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <TutorialProvider>
+        <AppContent />
+      </TutorialProvider>
     </QueryClientProvider>
   );
 }

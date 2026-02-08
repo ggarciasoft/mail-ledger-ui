@@ -4,8 +4,12 @@ import { useSubscriptionUsage } from '../hooks/use-subscription';
 import { useJob, useActiveJobs } from '../hooks/use-jobs';
 import { useQueryClient } from '@tanstack/react-query';
 import { Play, AlertCircle, Zap, FileCheck, CheckCircle2 } from 'lucide-react';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function ProcessingPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('processing');
+
     const [batchSize, setBatchSize] = useState(50);
     const [classifyJobId, setClassifyJobId] = useState<string | null>(null);
     const [extractJobId, setExtractJobId] = useState<string | null>(null);
@@ -156,7 +160,7 @@ export default function ProcessingPage() {
             {!isLoading && status && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     {/* Classification Status */}
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded-lg border border-gray-200 p-6 classification-section">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-gray-900">Classification</h3>
                             <Zap className="w-6 h-6 text-blue-600" />
@@ -176,7 +180,7 @@ export default function ProcessingPage() {
                     </div>
 
                     {/* Extraction Status */}
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="bg-white rounded-lg border border-gray-200 p-6 extraction-section">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-gray-900">Extraction</h3>
                             <FileCheck className="w-6 h-6 text-green-600" />
@@ -211,7 +215,7 @@ export default function ProcessingPage() {
                         max="1000"
                         value={batchSize}
                         onChange={(e) => setBatchSize(parseInt(e.target.value) || 50)}
-                        className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent batch-size-input"
                         disabled={classifyMutation.isPending || extractMutation.isPending}
                     />
                     <p className="mt-1 text-sm text-gray-500">

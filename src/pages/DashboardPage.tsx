@@ -4,8 +4,12 @@ import SpendingTrendsChart from '../components/SpendingTrendsChart';
 import TopMerchantsChart from '../components/TopMerchantsChart';
 import PeriodSelector from '../components/PeriodSelector';
 import { AlertCircle } from 'lucide-react';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function DashboardPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('dashboard');
+
     const { data: overview, isLoading: overviewLoading, error: overviewError } = useDashboardOverview();
     const {
         data: spendingTrends,
@@ -55,19 +59,23 @@ export default function DashboardPage() {
             </div>
 
             {/* Overview Cards */}
-            <div className="mb-8">
+            <div className="mb-8 overview-cards">
                 <OverviewCards data={overview} loading={overviewLoading} />
             </div>
 
             {/* Period Selector */}
-            <div className="mb-6 flex justify-end">
+            <div className="mb-6 flex justify-end period-selector">
                 <PeriodSelector value={trendsPeriod} onChange={handlePeriodChange} />
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <SpendingTrendsChart data={spendingTrends} loading={trendsLoading} />
-                <TopMerchantsChart data={topMerchants} loading={merchantsLoading} />
+                <div className="spending-trends-chart">
+                    <SpendingTrendsChart data={spendingTrends} loading={trendsLoading} />
+                </div>
+                <div className="top-merchants-chart">
+                    <TopMerchantsChart data={topMerchants} loading={merchantsLoading} />
+                </div>
             </div>
         </div>
     );

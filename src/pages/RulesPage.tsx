@@ -5,8 +5,12 @@ import RuleCard from '../components/RuleCard';
 import RuleForm from '../components/RuleForm';
 import EmptyRulesState from '../components/EmptyRulesState';
 import type { Rule, CreateRuleRequest, UpdateRuleRequest } from '../types/rule';
+import { useAutoStartTutorial } from '../hooks/use-auto-start-tutorial';
 
 export default function RulesPage() {
+    // Auto-start tutorial on first visit
+    useAutoStartTutorial('rules');
+
     const [showForm, setShowForm] = useState(false);
     const [editingRule, setEditingRule] = useState<Rule | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -89,15 +93,13 @@ export default function RulesPage() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Email Rules</h1>
                         <p className="text-gray-600">Create and manage email filtering rules</p>
                     </div>
-                    {rules && rules.length > 0 && (
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                        >
-                            <Plus className="w-5 h-5" />
-                            New Rule
-                        </button>
-                    )}
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium create-rule-button"
+                    >
+                        <Plus className="w-5 h-5" />
+                        New Rule
+                    </button>
                 </div>
 
                 {/* Search */}
@@ -132,12 +134,13 @@ export default function RulesPage() {
             ) : (
                 <div className="grid gap-4">
                     {filteredRules.map((rule) => (
-                        <RuleCard
-                            key={rule.id}
-                            rule={rule}
-                            onEdit={handleEdit}
-                            onToggleActive={handleToggleActive}
-                        />
+                        <div className="rule-card" key={rule.id}>
+                            <RuleCard
+                                rule={rule}
+                                onEdit={handleEdit}
+                                onToggleActive={handleToggleActive}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
