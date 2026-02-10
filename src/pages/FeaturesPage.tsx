@@ -38,7 +38,7 @@ export default function FeaturesPage() {
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 mb-3">Auto-Sync</h3>
                             <p className="text-slate-600">
-                                Connect your Gmail account once and let us handle the rest. We automatically scan for new financial emails daily.
+                                Connect your Email account once and let us handle the rest. We automatically scan for new financial emails daily.
                             </p>
                         </div>
                         <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">

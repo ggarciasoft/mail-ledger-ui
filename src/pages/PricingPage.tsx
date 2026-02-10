@@ -35,7 +35,7 @@ export default function PricingPage() {
                         <ul className="space-y-4 mb-8 flex-1">
                             <li className="flex items-start">
                                 <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                                <span className="text-slate-700 text-sm">Connect 1 Gmail account</span>
+                                <span className="text-slate-700 text-sm">Connect 1 Email account</span>
                             </li>
                             <li className="flex items-start">
                                 <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
@@ -59,7 +59,7 @@ export default function PricingPage() {
                         </Link>
                     </div>
 
-                    {/* Pro Plan */}
+                    {/* Pro Plan
                     <div className="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-8 flex flex-col transform md:-translate-y-4 relative">
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                             Most Popular
@@ -102,8 +102,8 @@ export default function PricingPage() {
                             Start Pro Trial
                         </Link>
                     </div>
-
-                    {/* Business Plan */}
+ */}
+                    {/* Business Plan 
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col">
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold text-slate-900 mb-2">Business</h3>
@@ -139,7 +139,7 @@ export default function PricingPage() {
                             Contact Sales
                         </Link>
                     </div>
-
+*/}
                 </div>
 
                 <div className="mt-20 text-center">

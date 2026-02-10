@@ -72,27 +72,11 @@ export default function ContactPage() {
                             </div>
 
                             <div className="flex items-start space-x-4">
-                                <div className="bg-purple-100 p-3 rounded-lg">
-                                    <MessageSquare className="w-6 h-6 text-purple-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-slate-900 mb-1">Live Chat</h3>
-                                    <p className="text-slate-600 mb-2">Available Mon-Fri, 9am - 5pm EST:</p>
-                                    <button className="text-indigo-600 hover:text-indigo-700 font-medium">Start a chat</button>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start space-x-4">
                                 <div className="bg-blue-100 p-3 rounded-lg">
                                     <MapPin className="w-6 h-6 text-blue-600" />
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-slate-900 mb-1">Office</h3>
-                                    <p className="text-slate-600">
-                                        123 Innovation Drive<br />
-                                        Tech City, TC 90210<br />
-                                        United States
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +87,7 @@ export default function ContactPage() {
                             <ul className="space-y-3">
                                 <li>
                                     <a href="#" className="text-slate-600 hover:text-indigo-600 transition-colors flex items-center justify-between group">
-                                        <span>How do I connect my Gmail?</span>
+                                        <span>How do I connect my Email?</span>
                                         <span className="text-slate-400 group-hover:text-indigo-600">→</span>
                                     </a>
                                 </li>

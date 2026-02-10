@@ -56,7 +56,7 @@ export default function LandingPage() {
                             <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border border-indigo-100">
                                 <Mail className="w-12 h-12 text-indigo-600 mb-4" />
                                 <h3 className="font-semibold text-slate-900 mb-2">Email Sync</h3>
-                                <p className="text-sm text-slate-600">Connect your Gmail and sync financial emails automatically</p>
+                                <p className="text-sm text-slate-600">Connect your Email and sync financial emails automatically</p>
                             </div>
                             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100">
                                 <Brain className="w-12 h-12 text-purple-600 mb-4" />
@@ -148,7 +148,7 @@ export default function LandingPage() {
                             </div>
                             <h3 className="text-xl font-semibold text-slate-900 mb-3">Secure & Private</h3>
                             <p className="text-slate-600">
-                                Read-only Gmail access, JWT authentication, encrypted tokens, and audit trails keep your data safe.
+                                Read-only Email access, JWT authentication, encrypted tokens, and audit trails keep your data safe.
                             </p>
                         </div>
                     </div>
@@ -174,9 +174,9 @@ export default function LandingPage() {
                                 <div className="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mb-4">
                                     1
                                 </div>
-                                <h3 className="text-lg font-semibold text-slate-900 mb-2">Connect Gmail</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 mb-2">Connect Email</h3>
                                 <p className="text-slate-600">
-                                    Securely connect your Gmail account with read-only OAuth access.
+                                    Securely connect your Email account with read-only OAuth access.
                                 </p>
                             </div>
                             <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">

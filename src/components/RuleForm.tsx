@@ -164,7 +164,7 @@ export default function RuleForm({ rule, onSubmit, onCancel, isLoading }: RuleFo
                             value={formData.labelPattern}
                             onChange={(value) => setFormData({ ...formData, labelPattern: value })}
                             placeholder="e.g., IMPORTANT"
-                            helperText="Gmail label to match"
+                            helperText="Email label to match"
                         />
                     </div>
 

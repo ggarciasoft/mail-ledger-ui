@@ -53,7 +53,7 @@ export default function SecurityPage() {
 
                         <h2 className="text-2xl font-semibold text-slate-900 mt-8 mb-4">Responsible Disclosure</h2>
                         <p className="mb-6">
-                            If you believe you have found a security vulnerability in MailLedger, please contact us at security@mailledger.com. We appreciate your help in keeping our service secure.
+                            If you believe you have found a security vulnerability in MailLedger, please contact us at support@mailledger.com. We appreciate your help in keeping our service secure.
                         </p>
                     </div>
                 </div>

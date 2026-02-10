@@ -183,7 +183,6 @@ Public navigation bar shared across non-app pages
 
 9. Company Pages
 About Us page with mission and values
-Blog page with article grid
 Contact page with information and form layout
 
 10. Product Pages
